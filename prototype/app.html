@@ -98,8 +98,24 @@ b,strong,h1,h2,h3,h4{font-weight:500}
 .hub .gm{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
 .hub .gn,.hub .gm{text-shadow:0 0 4px var(--bg),0 0 8px var(--bg),0 0 12px var(--bg)}
 .hub:hover .gn{color:var(--accent)}
-.card{position:absolute;left:0;top:0;width:212px;height:86px;padding:9px 11px 8px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;transition:opacity .35s,box-shadow .2s,border-color .2s,background .35s}
-.world.anim .card{transition:transform .95s cubic-bezier(.2,.8,.2,1),opacity .35s,box-shadow .2s,border-color .2s,background .35s}
+.card{position:absolute;left:0;top:0;width:212px;height:86px;padding:9px 11px 8px;border-radius:10px;overflow:hidden;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;transition:opacity .35s,box-shadow .2s,border-color .2s,background .35s}
+.world.anim .card{transition:transform .95s cubic-bezier(.2,.8,.2,1),width .6s cubic-bezier(.2,.8,.2,1),height .6s cubic-bezier(.2,.8,.2,1),border-radius .6s,padding .6s,opacity .35s,box-shadow .2s,border-color .2s,background .5s}
+.card > *{transition:opacity .3s .25s}
+.card.dot{width:var(--d);height:var(--d);padding:0;border-radius:50%;background:var(--dc);border-color:transparent;box-shadow:0 0 0 calc(var(--d) * .32) color-mix(in srgb,var(--dc) 15%,transparent)}
+.card.dot > *{opacity:0;visibility:hidden;transition:none}
+.card.dot:hover,.card.dot:focus-visible{box-shadow:0 0 0 calc(var(--d) * .45) color-mix(in srgb,var(--dc) 28%,transparent),0 0 20px color-mix(in srgb,var(--dc) 60%,transparent)}
+.card.dot.q{outline:1.5px dashed var(--warn);outline-offset:3px}
+.card.dot.sel{box-shadow:0 0 0 4px var(--bg),0 0 0 6px var(--accent),0 0 26px var(--accent)}
+.card.dot.recent{animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:0 0 0 calc(var(--d) * .7) color-mix(in srgb,var(--dc) 20%,transparent)}}
+.dim .card.dot:not(.hi){opacity:.22}
+.card.tucked{opacity:0!important;pointer-events:none}
+.hub{padding-top:100px}
+.hub.focus .gn{color:var(--accent)}
+.more{position:absolute;transform:translate(-50%,0) scale(var(--ls));transform-origin:50% 0;height:34px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);font-size:13px;color:var(--ink);white-space:nowrap}
+.more:hover{border-color:var(--accent);color:var(--accent)}
+.tip{position:absolute;z-index:4;pointer-events:none;max-width:260px;padding:8px 10px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-lg);font-size:12.5px;display:flex;flex-direction:column;gap:2px;transform:translate(-50%,calc(-100% - 12px))}
+.tip .meta{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:11px}
 .card:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .card .row{display:flex;align-items:center;gap:6px;min-width:0}
 .chip{flex:none;height:18px;min-width:22px;padding:0 5px;border-radius:5px;font-family:var(--f-display);font-weight:500;font-size:10px;letter-spacing:.02em;display:inline-grid;place-items:center;line-height:1;background:var(--card-2);color:var(--ink);border:1px solid var(--line)}
@@ -256,7 +272,7 @@ table.inv th.n{text-align:right}
 .modes button.on{background:var(--ink);color:var(--bg)}
 .app.touring .modes,.app.touring .hint{display:none}
 svg.blobs{transition:opacity .6s}
-.hub.silo{transform:translate(-50%,-50%) scale(var(--lss));transform-origin:50% 50%}
+.hub.silo{transform:translate(-50%,-50%) scale(var(--lss));transform-origin:50% 50%;padding-top:6px}
 .hub.silo .gn{font-size:17px}
 .world.far .hub.silo .gm{display:none}
 .hub.silo .chip{height:22px;min-width:26px;font-size:12px}
@@ -345,6 +361,7 @@ svg.blobs{transition:opacity .6s}
     </div>
     <div class="modes" id="modes" role="group"></div>
     <div class="tour" id="tour" hidden role="dialog" aria-live="polite"></div>
+    <div class="tip" id="tip" hidden></div>
     <div class="hint" id="hint"><div id="hint-t"></div><button type="button" id="hint-x" aria-label="Close">×</button></div>
     <div class="progress" id="progress" hidden><span class="spin"></span><span id="progress-t"></span></div>
     <div class="zoom">
@@ -743,7 +760,7 @@ const S = {
   tx: 0, ty: 0, s: 1,
   flying: new Set(), intake: 0,
   synth: null, forceCanned: false, busy: false,
-  mode: 'canvas', blobHold: false, tour: null, synthPromise: null,
+  mode: 'canvas', blobHold: false, tour: null, synthPromise: null, focus: null, focusAll: false,
 };
 for (const [id, g] of Object.entries(GROUPS)) S.groups[id] = { ...g, id };
 
@@ -794,104 +811,94 @@ function intersections() {
   }
   return out.sort((x, y) => y.items.length - x.items.length || y.srcs.size - x.srcs.size);
 }
-function computeTargets() {
-  const singles = {};
+// Overview layout: every save is a dot scattered around its group's soma (sunflower spiral with jitter);
+// saves in several groups sit along the connection between those somas.
+function memberCount(gid) { let n = 0; for (const it of S.items) if (it.g[gid]) n++; return n; }
+const liveGroups = (it) => Object.keys(it.g).filter((g) => S.groups[g]).sort((a, b) => it.g[b][0] - it.g[a][0]);
+function dotSizes() {
+  const ts = S.items.map((it) => Date.parse(it.when || it.stamp || '') || 0).filter(Boolean);
+  const lo = Math.min(...ts), hi = Math.max(...ts);
   for (const it of S.items) {
-    const gs = Object.keys(it.g).filter((g) => S.groups[g]);
-    if (gs.length === 1) (singles[gs[0]] ||= []).push(it);
+    const t = Date.parse(it.when || it.stamp || '') || lo;
+    const rec = hi > lo ? (t - lo) / (hi - lo) : 0.5;
+    it.d = Math.round(12 + 16 * Math.pow(rec, 1.6) + 4 * hash(it.id + 'd'));
+    it.recent = rec > 0.93;
   }
+}
+function dotLayout(list) {
+  const set = new Set(list);
+  const singles = {};
+  for (const it of S.items) { const gs = liveGroups(it); if (gs.length === 1) (singles[gs[0]] ||= []).push(it); }
   for (const [gid, arr] of Object.entries(singles)) {
+    arr.sort((a, b) => b.d - a.d);
     const [hx, hy] = S.groups[gid].hub;
-    const n = arr.length;
-    const outward = hx === 0 && hy === 0 ? -Math.PI / 2 - 0.9 : Math.atan2(hy, hx);
-    const full = gid === 'life' || S.groups[gid].extra || n > 9;
     arr.forEach((it, i) => {
-      const per = n > 9 ? 12 : n, ring = n > 9 ? Math.floor(i / per) : 0;
-      const step = full ? (Math.PI * 2) / Math.min(per, n - ring * per) : 0.6;
-      const a = full ? (i % per) * step - Math.PI / 2 + ring * 0.26 : outward + (i - (n - 1) / 2) * step;
-      const r = full ? 250 + ring * 125 : 250 + (i % 2) * 40;
-      it.tx = hx + Math.cos(a) * r; it.ty = hy + Math.sin(a) * r;
+      if (!set.has(it)) return;
+      const r = 84 + 27 * Math.sqrt(i + 1) * (0.8 + 0.4 * hash(it.id + 'r'));
+      const a = i * 2.39996 + (hash(it.id + 'a') - 0.5) * 0.7;
+      it.x = hx + Math.cos(a) * r; it.y = hy + Math.sin(a) * r * 0.92;
     });
   }
-  for (const it of S.items) {
-    const gs = Object.keys(it.g).filter((g) => S.groups[g]);
-    if (gs.length >= 2) {
-      let x = 0, y = 0;
-      for (const g of gs) { x += S.groups[g].hub[0]; y += S.groups[g].hub[1]; }
-      it.tx = x / gs.length + (hash(it.id) - 0.5) * 60;
-      it.ty = y / gs.length + (hash(it.id + 'y') - 0.5) * 60;
+  for (const it of list) {
+    const gs = liveGroups(it);
+    if (!gs.length) { it.x = 0; it.y = 0; continue; }
+    if (gs.length === 1) continue;
+    let cx = 0, cy = 0; for (const g of gs) { cx += S.groups[g].hub[0]; cy += S.groups[g].hub[1]; }
+    cx /= gs.length; cy /= gs.length;
+    const [ax, ay] = S.groups[gs[0]].hub, [bx, by] = S.groups[gs[1]].hub, len = Math.hypot(bx - ax, by - ay) || 1;
+    const t = (hash(it.id + 't') - 0.5) * 0.45, off = (hash(it.id + 'o') - 0.5) * 110;
+    it.x = cx + (bx - ax) * t * 0.5 - ((by - ay) / len) * off;
+    it.y = cy + (by - ay) * t * 0.5 + ((bx - ax) / len) * off;
+  }
+  // nudge dots apart, and keep them off the somas
+  const all = S.items;
+  for (let k = 0; k < 20; k++) {
+    for (let i = 0; i < all.length; i++) for (let j = i + 1; j < all.length; j++) {
+      const a = all[i], b = all[j], ma = set.has(a), mb = set.has(b);
+      if (!ma && !mb) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01, min = (a.d + b.d) / 2 + 9;
+      if (d >= min) continue;
+      const push = (min - d) / 2, ux = dx / d, uy = dy / d, wa = ma ? (mb ? 1 : 2) : 0, wb = mb ? (ma ? 1 : 2) : 0;
+      a.x -= ux * push * wa; a.y -= uy * push * wa; b.x += ux * push * wb; b.y += uy * push * wb;
     }
-    if (!gs.length) { it.tx = 0; it.ty = 0; }
-  }
-}
-function relax(movable, iters = 260) {
-  const hubs = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => ({ x: g.hub[0], y: g.hub[1] + 32, w: 250, h: 140, pinned: true }));
-  const all = S.items.map((it) => ({ it, x: it.x, y: it.y, w: CW, h: CH, pinned: !movable.has(it) }));
-  const bodies = all.concat(hubs);
-  for (let k = 0; k < iters; k++) {
-    for (const b of all) if (!b.pinned) { b.x += (b.it.tx - b.x) * 0.035; b.y += (b.it.ty - b.y) * 0.035; }
-    for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
-      const a = bodies[i], b = bodies[j];
-      if (a.pinned && b.pinned) continue;
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const ox = (a.w + b.w) / 2 + GAP - Math.abs(dx), oy = (a.h + b.h) / 2 + GAP - Math.abs(dy);
-      if (ox <= 0 || oy <= 0) continue;
-      const wa = a.pinned ? 0 : b.pinned ? 1 : 0.5, wb = b.pinned ? 0 : a.pinned ? 1 : 0.5;
-      if (ox < oy) { const sgn = dx === 0 ? (i % 2 ? 1 : -1) : Math.sign(dx); a.x -= sgn * ox * wa; b.x += sgn * ox * wb; }
-      else { const sgn = dy === 0 ? (i % 2 ? 1 : -1) : Math.sign(dy); a.y -= sgn * oy * wa; b.y += sgn * oy * wb; }
+    for (const it of list) for (const g of Object.values(S.groups)) {
+      const dx = it.x - g.hub[0], dy = it.y - g.hub[1], d = Math.hypot(dx, dy) || 1;
+      if (d < 70) { it.x = g.hub[0] + (dx / d) * 70; it.y = g.hub[1] + (dy / d) * 70; }
     }
   }
-  for (const b of all) { b.it.x = b.x; b.it.y = b.y; }
 }
-function memberCount(gid) { let n = 0; for (const it of S.items) if (it.g[gid]) n++; return n; }
-// Large collections use a grid: each card takes the free cell nearest its target, so nothing overlaps.
-const BIG = 80, GW = CW + 24, GH = CH + 22;
-const cellKey = (c, r) => c + ',' + r;
-function gridOccupied(except) {
-  const occ = new Set();
-  for (const g of Object.values(S.groups)) if (memberCount(g.id)) {
-    const c = Math.round(g.hub[0] / GW), r = Math.round(g.hub[1] / GH);
-    for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) occ.add(cellKey(c + dc, r + dr));
-  }
-  for (const it of S.items) if (!except.has(it) && it.cell) occ.add(it.cell);
-  return occ;
-}
-function gridPlace(list) {
-  const occ = gridOccupied(new Set(list));
-  // multi-group cards first so they claim the space between their groups
-  const order = [...list].sort((a, b) => Object.keys(b.g).length - Object.keys(a.g).length);
-  for (const it of order) {
-    const gs = Object.keys(it.g).filter((g) => S.groups[g]);
-    let tx = 0, ty = 0;
-    for (const g of gs) { tx += S.groups[g].hub[0]; ty += S.groups[g].hub[1]; }
-    if (gs.length) { tx /= gs.length; ty /= gs.length; }
-    const c0 = Math.round(tx / GW), r0 = Math.round(ty / GH);
-    let best = null, bd = Infinity;
-    for (let ring = 0; ring < 60 && !best; ring++) {
-      for (let dc = -ring; dc <= ring; dc++) for (let dr = -ring; dr <= ring; dr++) {
-        if (Math.max(Math.abs(dc), Math.abs(dr)) !== ring) continue;
-        const k = cellKey(c0 + dc, r0 + dr); if (occ.has(k)) continue;
-        const d = Math.hypot((c0 + dc) * GW - tx, (r0 + dr) * GH - ty);
-        if (d < bd) { bd = d; best = [c0 + dc, r0 + dr]; }
-      }
+function layoutAll() { dotSizes(); dotLayout(S.items); }
+function layoutSome(list) { dotSizes(); dotLayout(list); }
+// Focus view: the chosen group's cards bloom around its soma on widening elliptical rings.
+const BLOOM_FIRST = 12;
+function computeBloom() {
+  for (const it of S.items) it.bloom = null;
+  S.bloomMore = 0; S.bloomRings = 0;
+  if (!S.focus || S.mode === 'silo' || !S.groups[S.focus]) return;
+  const [hx, hy] = S.groups[S.focus].hub;
+  const mem = S.items.filter((it) => it.g[S.focus]).sort((a, b) => b.g[S.focus][0] - a.g[S.focus][0] || b.d - a.d);
+  const shown = S.focusAll ? mem : mem.slice(0, BLOOM_FIRST);
+  S.bloomMore = mem.length - shown.length;
+  let i = 0, k = 0;
+  while (i < shown.length) {
+    const rx = 270 + k * 245, ry = 158 + k * 114;
+    const per = Math.max(5, Math.floor((2 * Math.PI * Math.sqrt((rx * rx + ry * ry) / 2)) / 258));
+    const n = Math.min(per, shown.length - i);
+    for (let q = 0; q < n; q++, i++) {
+      const a = -Math.PI / 2 + (q / n) * Math.PI * 2 + k * 0.45;
+      shown[i].bloom = [hx + Math.cos(a) * rx, hy + Math.sin(a) * ry];
     }
-    it.cell = cellKey(best[0], best[1]); occ.add(it.cell);
-    it.x = best[0] * GW; it.y = best[1] * GH;
+    k++;
   }
+  S.bloomRings = k;
+  S.bloomBottom = hy + 158 + (k - 1) * 114 + CH / 2;
 }
-function layoutAll() {
-  if (S.items.length > BIG) return gridPlace(S.items);
-  computeTargets();
-  for (const it of S.items) { it.x = it.tx; it.y = it.ty; }
-  relax(new Set(S.items));
-}
-function layoutSome(list) {
-  if (S.items.length > BIG) return gridPlace(list);
-  computeTargets();
-  const set = new Set(list);
-  for (const it of list) if (it.x === undefined || it.fresh) { it.x = it.tx; it.y = it.ty; }
-  relax(set, 200);
-}
+// Where a save is drawn right now, and whether it is a full card or a dot
+const D = (it) => (S.mode === 'silo' ? [it.sx, it.sy] : it.bloom || [it.x, it.y]);
+// members of the open group that have not bloomed yet stay tucked behind the "show more" button
+const tucked = (it) => !!(S.focus && S.mode === 'canvas' && it.g[S.focus] && !it.bloom && !(S.sel?.type === 'item' && S.sel.id === it.id));
+const asCard = (it) => S.mode === 'silo' || !!it.bloom || (S.sel?.type === 'item' && S.sel.id === it.id);
+const place = (c, x, y, extra = '') => { c.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)${extra}`; };
 function freeHub() {
   const hubs = Object.values(S.groups).map((g) => g.hub);
   let best = null, bestD = -1;
@@ -926,7 +933,7 @@ function renderChrome() {
   $('#btn-tour-t').textContent = L('演示导览', 'Guided tour');
   $('#btn-import-t').textContent = L('导入', 'Import');
   $('#btn-lang').textContent = LANG === 'zh' ? 'EN' : '中文';
-  $('#hint-t').innerHTML = MODE.hint ? tr(MODE.hint) : L('<b>点任意卡片</b>,一根线会连回它原来的平台。第一次来?点上面的<b>「演示导览」</b>,90 秒看完整个故事。', '<b>Click any card</b> and a thread lights up back to the platform it came from. First time here? Press <b>Guided tour</b> for the 90-second story.');
+  $('#hint-t').innerHTML = MODE.hint ? tr(MODE.hint) : L('<b>点一个神经元</b>展开这一组;点任意一个点,一根线会连回它原来的平台。第一次来?点上面的<b>「演示导览」</b>,90 秒看完整个故事。', '<b>Open a neuron</b> to see its cards; click any dot and a thread lights up back to its platform. First time here? Press <b>Guided tour</b> for the 90-second story.');
   renderModes(); renderTour();
   $('#ask-q').placeholder = L('问问你存过的全部东西…', 'Ask across everything you have saved…');
   $('#ask-go').textContent = L('生成', 'Ask');
@@ -957,7 +964,8 @@ function renderDock() {
 function relatedIds() {
   const sel = S.sel; const ids = new Set(); const gs = new Set();
   if (S.q) { for (const it of S.items) if (matches(it)) ids.add(it.id); return { ids, gs, active: true }; }
-  if (!sel) return { ids, gs, active: false };
+  if (S.focus && S.mode === 'canvas') { gs.add(S.focus); for (const it of S.items) if (it.g[S.focus]) ids.add(it.id); }
+  if (!sel) return { ids, gs, active: !!S.focus && S.mode === 'canvas' };
   if (sel.type === 'item') { const it = S.byId[sel.id]; if (it) { ids.add(it.id); Object.keys(it.g).forEach((g) => gs.add(g)); } }
   if (sel.type === 'group') { gs.add(sel.id); for (const it of S.items) if (it.g[sel.id]) ids.add(it.id); }
   if (sel.type === 'source') for (const it of S.items) if (it.src === sel.id) ids.add(it.id);
@@ -968,7 +976,7 @@ function relatedIds() {
 function renderCanvas() {
   const rel = relatedIds();
   world.classList.toggle('dim', rel.active);
-  computeSilo();
+  computeSilo(); computeBloom();
   // hubs (canvas) or platform column headers (silo)
   if (S.mode === 'silo') {
     const litSrc = new Set([...rel.ids].map((id) => S.byId[id]?.src));
@@ -985,7 +993,7 @@ function renderCanvas() {
   } else hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
     const n = memberCount(g.id);
     const srcs = new Set(S.items.filter((it) => it.g[g.id]).map((it) => it.src)).size;
-    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1] + 50}px">
+    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}${S.focus === g.id ? ' focus' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1] - 46}px" aria-label="${esc(tr(g.name))}">
       <div class="gn">${esc(tr(g.name))}</div>
       <div class="gm">${L(`${n} 条 · 来自 ${srcs} 个平台`, `${n} items · from ${srcs} platforms`)}</div></button>`;
   }).join('');
@@ -993,21 +1001,26 @@ function renderCanvas() {
   const existing = new Map([...cardsEl.children].map((c) => [c.dataset.id, c]));
   for (const it of S.items) {
     let c = existing.get(it.id);
-    const [px, py] = P(it);
-    if (!c) { c = document.createElement('button'); c.type = 'button'; c.className = 'card'; c.dataset.id = it.id; cardsEl.appendChild(c); if (!it.skipInit) c.style.transform = `translate(${px - CW / 2}px,${py - CH / 2}px)`; }
+    const [px, py] = D(it);
+    if (!c) { c = document.createElement('button'); c.type = 'button'; c.className = 'card'; c.dataset.id = it.id; cardsEl.appendChild(c); if (!it.skipInit) place(c, px, py); }
     existing.delete(it.id);
     const s = SRC[it.src];
     const gs = Object.entries(it.g).filter(([g]) => S.groups[g]);
     const prim = gs.slice().sort((a, b) => b[1][0] - a[1][0])[0];
     c.style.setProperty('--dc', prim ? S.groups[prim[0]].c : 'var(--muted)');
     c.classList.toggle('q', isQ(it));
+    c.classList.toggle('dot', !asCard(it));
+    c.classList.toggle('tucked', tucked(it));
+    c.tabIndex = tucked(it) ? -1 : 0;
+    c.classList.toggle('recent', !!it.recent);
+    c.style.setProperty('--d', `${it.d || 16}px`);
     c.classList.toggle('sel', !!(S.sel && S.sel.type === 'item' && S.sel.id === it.id) || ((S.sel?.type === 'set' || S.sel?.type === 'inter') && rel.ids.has(it.id)));
     c.classList.toggle('hi', rel.ids.has(it.id) || (S.sel?.type === 'item' && gs.some(([g]) => rel.gs.has(g)) && !S.q));
     c.setAttribute('aria-label', `${s.n}: ${it.t}`);
     c.innerHTML = `<div class="row">${srcChip(it.src)}<span class="meta">${esc(tr(it.meta))}</span></div>
       <div class="t">${esc(it.t)}</div>
       <div class="gs">${gs.map(([g, m]) => `<i style="background:${S.groups[g].c};opacity:${m[0] < 0.6 ? 0.45 : 1}" title="${esc(gName(g))}"></i>`).join('')}${isQ(it) ? `<span class="unsure">${L('拿不准', 'unsure')}</span>` : ''}</div>`;
-    if (!it.flyingNow) c.style.transform = `translate(${px - CW / 2}px,${py - CH / 2}px)`;
+    if (!it.flyingNow) place(c, px, py);
   }
   for (const c of existing.values()) c.remove();
   // floating label on an intersection
@@ -1016,6 +1029,8 @@ function renderCanvas() {
     const sh = sharedItems(S.sel.a, S.sel.b);
     const cx = sh.reduce((a, it) => a + it.x, 0) / (sh.length || 1), top = Math.min(...sh.map((it) => it.y)) - CH / 2 - 14;
     ov.innerHTML = sh.length ? `<div class="xlabel" style="left:${cx}px;top:${top}px">${esc(gName(S.sel.a))} × ${esc(gName(S.sel.b))} · ${sh.length}</div>` : '';
+  } else if (S.focus && S.bloomMore && S.mode === 'canvas') {
+    ov.innerHTML = `<button type="button" class="more" style="left:${S.groups[S.focus].hub[0]}px;top:${S.bloomBottom + 34}px">${L(`再展开 ${S.bloomMore} 条`, `Show ${S.bloomMore} more`)}</button>`;
   } else ov.innerHTML = '';
   renderBlobs(rel);
 }
@@ -1074,6 +1089,7 @@ function renderBlobs(rel) {
   let defs = `<defs>
     <filter id="wc-edge" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="wc-bleed" x="-60%" y="-60%" width="220%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="4"/></filter>`, body = '';
+  const maxMembers = Math.max(1, ...Object.keys(S.groups).map(memberCount));
   for (const g of Object.values(S.groups)) {
     const mem = S.items.filter((it) => it.g[g.id] && !it.flyingNow);
     if (!mem.length) continue;
@@ -1082,17 +1098,22 @@ function renderBlobs(rel) {
     const [hx, hy] = g.hub;
     let nerves = '';
     for (const it of mem) {
-      const end = cardEdge(it, g.hub);
+      if (tucked(it)) continue;
+      const [ex, ey] = D(it);
+      let end;
+      if (asCard(it)) end = cardEdge({ x: ex, y: ey }, g.hub);
+      else { const ddx = hx - ex, ddy = hy - ey, dl = Math.hypot(ddx, ddy) || 1, r = (it.d || 16) / 2 + 2; end = [ex + (ddx / dl) * r, ey + (ddy / dl) * r]; }
       const dx = end[0] - hx, dy = end[1] - hy, len = Math.hypot(dx, dy) || 1;
       const bend = (hash(it.id + g.id) - 0.5) * 0.36 * len;
       const start = [hx + (dx / len) * 26, hy + (dy / len) * 26];
       const c = [(hx + end[0]) / 2 - (dy / len) * bend, (hy + end[1]) / 2 + (dx / len) * bend];
       const weak = it.g[g.id][0] < 0.6;
-      nerves += `<path d="${taper(start, c, end, weak ? 2.6 : 4.2, 0.9)}" fill="${g.c}" class="${weak ? 'nv weak' : 'nv'}"/>`
-        + `<circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="6" fill="${g.c}" opacity=".16"/><circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="2.8" fill="${g.c}"/>`;
+      nerves += `<path d="${taper(start, c, end, weak ? 2.2 : 3.6, 0.7)}" fill="${g.c}" class="${weak ? 'nv weak' : 'nv'}"/>`
+        + (asCard(it) ? `<circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="6" fill="${g.c}" opacity=".16"/><circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="2.8" fill="${g.c}"/>` : '');
     }
     const hi = rel.gs.has(g.id) || (rel.active && mem.some((it) => rel.ids.has(it.id)));
-    body += `<g class="blob${hi ? ' hi' : ''}">${nerves}${soma(g)}</g>`;
+    const k = 0.8 + 0.55 * Math.sqrt(mem.length / maxMembers);
+    body += `<g class="blob${hi ? ' hi' : ''}">${nerves}<g transform="translate(${hx},${hy}) scale(${f1(k)}) translate(${-hx},${-hy})">${soma(g)}</g></g>`;
   }
   blobsEl.innerHTML = defs + '</defs>' + body;
   blobsEl.style.opacity = S.mode === 'silo' || S.blobHold ? '0' : '1';
@@ -1103,14 +1124,14 @@ function applyTransform() {
   world.style.transform = `translate(${S.tx}px,${S.ty}px) scale(${S.s})`;
   world.style.setProperty('--ls', String(Math.max(1, 0.72 / S.s)));
   world.style.setProperty('--lss', String(clamp(0.7 / S.s, 1, MODE.siloBy === 'folder' ? 2.6 : 1.25)));
-  world.classList.toggle('far', S.s < 0.34);
+  world.classList.toggle('far', S.s < 0.34 && S.mode === 'silo');
   const gs = 26 * S.s;
   stage.style.backgroundSize = `${gs}px ${gs}px`;
   stage.style.backgroundPosition = `${S.tx}px ${S.ty}px`;
 }
 function bounds(list) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (const it of list) { const [x, y] = P(it); x0 = Math.min(x0, x - CW / 2); y0 = Math.min(y0, y - CH / 2); x1 = Math.max(x1, x + CW / 2); y1 = Math.max(y1, y + CH / 2); }
+  for (const it of list) { const [x, y] = D(it); const w = asCard(it) ? CW / 2 : (it.d || 16) / 2 + 6, h = asCard(it) ? CH / 2 : w; x0 = Math.min(x0, x - w); y0 = Math.min(y0, y - h); x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h); }
   if (S.mode === 'silo') { y0 = Math.min(y0, SILO_Y0 - 130); return { x0, y0, x1, y1 }; }
   for (const g of Object.values(S.groups)) if (memberCount(g.id) && list === S.items) { x0 = Math.min(x0, g.hub[0] - 140); x1 = Math.max(x1, g.hub[0] + 140); y0 = Math.min(y0, g.hub[1] - 50); y1 = Math.max(y1, g.hub[1] + 50); }
   return { x0, y0, x1, y1 };
@@ -1126,12 +1147,18 @@ function fitTo(list, animate, minS = 0.18, maxS = 1.2) {
 }
 function fit(animate) { fitTo(S.items, animate); }
 // Frame the main groups at a readable zoom (the Life group sits off to the side)
-function fitMain(animate) { if (S.mode === 'silo') return fit(animate); fitTo(S.items.filter((it) => !it.g.life), animate, 0.36, 1.1); }
+function fitMain(animate) { if (S.mode === 'silo') return fit(animate); fitTo(S.items, animate, 0.2, 1.1); }
+function fitBloom(animate) {
+  const shown = S.items.filter((it) => it.bloom);
+  const g = S.groups[S.focus]; if (!g) return;
+  const first = shown.slice(0, BLOOM_FIRST);
+  fitTo(first.length ? first : shown, animate, 0.32, 1.05);
+}
 // Open close enough to read the cards; the fit button (⤢) shows the whole board.
-function initialView() { fitTo(S.items.filter((it) => !it.g.life), false, window.innerWidth <= 860 ? 0.38 : 0.5, 1.1); }
+function initialView() { fitTo(S.items, false, 0.2, 1.1); }
 function centerOn(it, minScale) {
   const r = stage.getBoundingClientRect();
-  const [x, y] = P(it);
+  const [x, y] = D(it);
   const sx = S.tx + x * S.s, sy = S.ty + y * S.s;
   const inside = sx > 80 && sx < r.width - 80 && sy > padTop() + 40 && sy < r.height - 140;
   const s = Math.max(S.s, minScale || 0);
@@ -1161,6 +1188,7 @@ function zoomAt(f, cx, cy) {
 const pointers = new Map(); let drag = null; let moved = false;
 stage.addEventListener('pointerdown', (e) => {
   if (e.target.closest('.ask,.zoom,.hint,.progress,.modes,.tour')) return;
+  $('#tip').hidden = true;
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   stage.setPointerCapture(e.pointerId);
   moved = false;
@@ -1200,12 +1228,38 @@ function handleStageClick(target) {
   if (card) return select({ type: 'item', id: card.dataset.id });
   if (hub && hub.dataset.src) return select({ type: 'source', id: hub.dataset.src });
   if (hub && hub.dataset.folder) { const c = S.siloCols.find((x) => x.key === hub.dataset.folder); return select({ type: 'set', ids: c.ids }, { keepPanel: true }); }
-  if (hub) return select({ type: 'group', id: hub.dataset.group });
-  if (S.sel) select(null);
+  if (hub) return S.focus === hub.dataset.group ? unfocus() : select({ type: 'group', id: hub.dataset.group });
+  if (target.closest('.more')) { S.focusAll = true; animateLayout(); renderCanvas(); return fitTo(S.items.filter((it) => it.bloom), true, 0.2, 1); }
+  if (S.sel?.type === 'item' && S.focus) return select({ type: 'group', id: S.focus }, { noFit: true });
+  if (S.sel || S.focus) unfocus();
+}
+function animateLayout(ms = 1000) {
+  world.classList.add('anim');
+  clearTimeout(animateLayout.t);
+  animateLayout.t = setTimeout(() => world.classList.remove('anim'), ms);
+}
+function unfocus() {
+  const had = !!S.focus;
+  S.focus = null; S.focusAll = false;
+  if (had) animateLayout();
+  select(null);
+  if (had) fitMain(true);
 }
 // keyboard activation of cards and hubs
 cardsEl.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.card')) { e.preventDefault(); select({ type: 'item', id: e.target.closest('.card').dataset.id }); } });
 hubsEl.addEventListener('keydown', (e) => { const h = e.target.closest('.hub'); if ((e.key === 'Enter' || e.key === ' ') && h) { e.preventDefault(); select(h.dataset.src ? { type: 'source', id: h.dataset.src } : { type: 'group', id: h.dataset.group }); } });
+
+// hovering a dot shows what it is
+const tip = $('#tip');
+cardsEl.addEventListener('pointerover', (e) => {
+  const c = e.target.closest('.card.dot'); if (!c || drag) return;
+  const it = S.byId[c.dataset.id]; if (!it) return;
+  const sr = stage.getBoundingClientRect(), r = c.getBoundingClientRect();
+  tip.innerHTML = `<span class="meta">${srcChip(it.src)}${esc(tr(it.meta))}</span><span>${esc(it.t)}</span>`;
+  tip.style.left = `${r.left + r.width / 2 - sr.left}px`; tip.style.top = `${r.top - sr.top}px`;
+  tip.hidden = false;
+});
+cardsEl.addEventListener('pointerout', (e) => { if (e.target.closest('.card.dot')) tip.hidden = true; });
 
 /* ================= threads ================= */
 const threadEls = new Map();
@@ -1256,11 +1310,17 @@ function drawThreads() {
 
 /* ================= selection ================= */
 function select(sel, opts = {}) {
+  const before = S.focus;
+  if (sel?.type === 'group') { if (S.focus !== sel.id) S.focusAll = false; S.focus = sel.id; }
+  else if (sel?.type === 'item') { if (S.focus && !S.byId[sel.id]?.g[S.focus]) S.focus = null; }
+  else if (!(sel?.type === 'set' && opts.keepPanel && S.focus)) S.focus = null;
+  if (before !== S.focus || sel?.type === 'item') animateLayout();
   S.sel = sel;
   S.keepPanel = !!opts.keepPanel;
   if (sel && !opts.keepPanel) panel.classList.add('open');
   if (sel && sel.type === 'item' && opts.center) centerOn(S.byId[sel.id], opts.minScale);
   renderDock(); renderCanvas(); renderPanel();
+  if (sel?.type === 'group' && S.mode === 'canvas' && !opts.noFit) fitBloom(true);
   if (sel && sel.type === 'item') {
     const node = dock.querySelector(`[data-src="${S.byId[sel.id].src}"]`);
     if (node) { node.classList.remove('pulse'); void node.offsetWidth; node.classList.add('pulse'); }
@@ -1487,7 +1547,7 @@ pbody.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act],[data-preset]'); if (!b) return;
   if (b.dataset.preset) return runPreset(b.dataset.preset);
   const act = b.dataset.act, id = b.dataset.id, gid = b.dataset.g;
-  if (act === 'back') return select(null);
+  if (act === 'back') return S.sel?.type === 'item' && S.focus ? select({ type: 'group', id: S.focus }, { noFit: true }) : unfocus();
   if (act === 'open') return select({ type: 'item', id }, { center: true });
   if (act === 'group') return select({ type: 'group', id: gid });
   if (act === 'inter') return focusInter(b.dataset.a, b.dataset.b);
@@ -1566,6 +1626,7 @@ function dockWorldPoint(sid) {
 }
 async function arrive(raw, opts = {}) {
   if (S.mode === 'silo') { setMode('canvas'); await sleep(1100); }
+  if (S.focus) { S.focus = null; S.focusAll = false; S.sel = null; animateLayout(); renderCanvas(); }
   const it = addItem(raw, nowStamp());
   it.fresh = true;
   layoutSome([it]);
@@ -1576,11 +1637,11 @@ async function arrive(raw, opts = {}) {
   renderCanvas();
   const c = cardsEl.querySelector(`[data-id="${CSS.escape(it.id)}"]`);
   world.classList.remove('anim');
-  c.style.transform = `translate(${dx - CW / 2}px,${dy - CH / 2}px) scale(.4)`;
+  place(c, dx, dy, ' scale(.4)');
   void c.offsetWidth;
   world.classList.add('anim');
   S.flying.add(it.id);
-  c.style.transform = `translate(${tx - CW / 2}px,${ty - CH / 2}px)`;
+  place(c, tx, ty);
   c.classList.add('new');
   const node = dock.querySelector(`[data-src="${it.src}"]`); node.classList.remove('pulse'); void node.offsetWidth; node.classList.add('pulse');
   if (opts.center) centerOn(it);
@@ -1961,10 +2022,11 @@ function renderModes() {
 function setMode(m) {
   if (S.mode === m) return;
   S.mode = m;
+  if (m === 'silo') { S.focus = null; S.focusAll = false; }
   if (m === 'canvas') S.blobHold = true;
   computeSilo();
   world.classList.add('anim');
-  cardsEl.querySelectorAll('.card').forEach((c) => { c.style.transitionDelay = `${Math.round(hash(c.dataset.id + m) * 320)}ms`; });
+  cardsEl.querySelectorAll('.card').forEach((c) => { c.style.transitionDelay = `${Math.round(hash(c.dataset.id + m) * 420)}ms`; });
   renderCanvas(); renderModes(); fit(true);
   clearTimeout(setMode.t);
   setMode.t = setTimeout(() => {
@@ -1991,8 +2053,11 @@ const TOUR = [
     b: ['这是一个人真实的处境:3 个 AI 的聊天记录,4 个平台的收藏,一共 41 样东西。每个 AI 只看得见自己那一列,人也记不住哪一列里有什么。', 'This is one person\'s reality: chats in 3 AIs and saves on 4 platforms, 41 things in total. Each AI sees only its own column, and nobody remembers what is in which one.'],
     run: () => { select(null); setMode('silo'); } },
   { t: ['AI 把它们放到一张白板上', 'AI puts it all on one canvas'],
-    b: ['导入之后,AI 自动分组。一条收藏可以同时属于好几个组,形状重叠的地方就是交集。原件一样都没动。', 'After import, AI groups everything. One save can belong to several groups; where the shapes overlap is the intersection. No original was moved.'],
+    b: ['导入之后,AI 自动分组。每个神经元是一个组,每个点是一条收藏,越新的点越大。同时属于两个组的点,落在两个神经元之间。原件一样都没动。', 'After import, AI groups everything. Each neuron is a group and each dot is a save; newer dots are bigger. A dot in two groups sits between two neurons. No original was moved.'],
     run: () => { select(null); if (S.mode === 'canvas') fitMain(true); else { setMode('canvas'); fitMain(true); } } },
+  { t: ['点开一个神经元', 'Open one neuron at a time'],
+    b: ['默认只有神经元和点,不会一下子被几百张卡片淹没。点一个神经元,这一组的卡片才一圈圈绽放出来,其他组退到背景。', 'By default you see only neurons and dots, never hundreds of cards at once. Open a neuron and only its cards bloom around it; the rest steps back.'],
+    run: () => { if (S.mode === 'silo') setMode('canvas'); select({ type: 'group', id: 'ai' }); } },
   { t: ['点一张卡片:它从哪来?', 'Click a card: where did it come from?'],
     b: ['一根线连回 YouTube,证明东西没被搬走。它同时在学习、AI、设计三个组里,右边写着每个组的理由和把握度。', 'A thread leads back to YouTube: the original never moved. It sits in Learning, AI and Design at once, and the panel gives the reason and confidence for each.'],
     run: () => { if (S.mode === 'silo') setMode('canvas'); select({ type: 'item', id: 'y5' }, { center: true, minScale: 0.62 }); } },
