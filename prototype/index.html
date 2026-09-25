@@ -88,6 +88,7 @@ b,strong,h1,h2,h3,h4{font-weight:500}
 .node.pulse{animation:nodepulse 1s ease-out}
 @keyframes nodepulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
 .node .n{position:absolute;right:-7px;top:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:10.5px;display:grid;place-items:center}
+.node .n.z{opacity:.35}
 .node .n.q{background:var(--accent);color:var(--accent-ink)}
 
 /* ---------- stage ---------- */
@@ -421,6 +422,9 @@ const SRC = {
 };
 const SRC_IDS = Object.keys(SRC);
 
+/* DATA:START — everything down to DATA:END can be swapped for a real dataset */
+// How this dataset is presented: tour on/off, what the "before" view groups by, and labels.
+const MODE = { tour: true, siloBy: 'src', label: null, hint: null };
 const GROUPS = {
   ai:      { name: ['AI 工具与工作流', 'AI tools & workflows'], c: '#6B4FD6', hub: [0, 0],
              def: ['你怎么用 AI 干活:模型、agent、提示词和自动化。', 'How you get work done with AI: models, agents, prompts, automation.'] },
@@ -713,6 +717,7 @@ const PRESETS = [
   { k: 'startup', q: ['把创业想法的资料拉齐', 'Gather everything for my startup'], sub: ['证据、竞品、可行性、怎么讲', 'Evidence, competitors, feasibility, story'],
     task: 'Assemble a research pack for this person\'s startup idea (Full Context Canvas): evidence of the pain, competitors, technical feasibility, and how to pitch and find first users.' },
 ];
+/* DATA:END */
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -763,11 +768,22 @@ const CW = 212, CH = 86, GAP = 16;
 const SILO_DX = 244, SILO_Y0 = -380;
 // Position of a card in the current view: 'silo' = one column per platform (before), 'canvas' = AI groups (after)
 const P = (it) => (S.mode === 'silo' ? [it.sx, it.sy] : [it.x, it.y]);
+const SILO_ROWS = 15;
 function computeSilo() {
-  SRC_IDS.forEach((sid, i) => {
-    let k = 0;
-    for (const it of S.items) if (it.src === sid) { it.sx = (i - (SRC_IDS.length - 1) / 2) * SILO_DX; it.sy = SILO_Y0 + k++ * 102; }
-  });
+  // 'before' view: one column per platform, or per original folder, wrapping every SILO_ROWS cards
+  const keyOf = (it) => (MODE.siloBy === 'folder' ? it.folder || '—' : it.src);
+  const keys = MODE.siloBy === 'folder' ? [...new Set(S.items.map(keyOf))] : SRC_IDS.filter((sid) => S.items.some((it) => it.src === sid));
+  const cols = []; let col = 0;
+  for (const key of keys) {
+    const arr = S.items.filter((it) => keyOf(it) === key);
+    const first = col;
+    arr.forEach((it, k) => { it.scol = first + Math.floor(k / SILO_ROWS); it.sy = SILO_Y0 + (k % SILO_ROWS) * 102; });
+    cols.push({ key, first, n: arr.length, ids: arr.map((it) => it.id) });
+    col += Math.max(1, Math.ceil(arr.length / SILO_ROWS));
+  }
+  const mid = (col - 1) / 2;
+  for (const it of S.items) it.sx = (it.scol - mid) * SILO_DX;
+  S.siloCols = cols.map((c) => ({ ...c, x: (c.first - mid) * SILO_DX }));
 }
 function sharedItems(a, b) { return S.items.filter((it) => it.g[a] && it.g[b]); }
 function intersections() {
@@ -788,11 +804,12 @@ function computeTargets() {
     const [hx, hy] = S.groups[gid].hub;
     const n = arr.length;
     const outward = hx === 0 && hy === 0 ? -Math.PI / 2 - 0.9 : Math.atan2(hy, hx);
-    const full = gid === 'life' || S.groups[gid].extra;
+    const full = gid === 'life' || S.groups[gid].extra || n > 9;
     arr.forEach((it, i) => {
-      const step = full ? (Math.PI * 2) / n : 0.6;
-      const a = full ? i * step - Math.PI / 2 : outward + (i - (n - 1) / 2) * step;
-      const r = full ? 230 : 250 + (i % 2) * 40;
+      const per = n > 9 ? 12 : n, ring = n > 9 ? Math.floor(i / per) : 0;
+      const step = full ? (Math.PI * 2) / Math.min(per, n - ring * per) : 0.6;
+      const a = full ? (i % per) * step - Math.PI / 2 + ring * 0.26 : outward + (i - (n - 1) / 2) * step;
+      const r = full ? 250 + ring * 125 : 250 + (i % 2) * 40;
       it.tx = hx + Math.cos(a) * r; it.ty = hy + Math.sin(a) * r;
     });
   }
@@ -827,12 +844,49 @@ function relax(movable, iters = 260) {
   for (const b of all) { b.it.x = b.x; b.it.y = b.y; }
 }
 function memberCount(gid) { let n = 0; for (const it of S.items) if (it.g[gid]) n++; return n; }
+// Large collections use a grid: each card takes the free cell nearest its target, so nothing overlaps.
+const BIG = 80, GW = CW + 24, GH = CH + 22;
+const cellKey = (c, r) => c + ',' + r;
+function gridOccupied(except) {
+  const occ = new Set();
+  for (const g of Object.values(S.groups)) if (memberCount(g.id)) {
+    const c = Math.round(g.hub[0] / GW), r = Math.round(g.hub[1] / GH);
+    for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) occ.add(cellKey(c + dc, r + dr));
+  }
+  for (const it of S.items) if (!except.has(it) && it.cell) occ.add(it.cell);
+  return occ;
+}
+function gridPlace(list) {
+  const occ = gridOccupied(new Set(list));
+  // multi-group cards first so they claim the space between their groups
+  const order = [...list].sort((a, b) => Object.keys(b.g).length - Object.keys(a.g).length);
+  for (const it of order) {
+    const gs = Object.keys(it.g).filter((g) => S.groups[g]);
+    let tx = 0, ty = 0;
+    for (const g of gs) { tx += S.groups[g].hub[0]; ty += S.groups[g].hub[1]; }
+    if (gs.length) { tx /= gs.length; ty /= gs.length; }
+    const c0 = Math.round(tx / GW), r0 = Math.round(ty / GH);
+    let best = null, bd = Infinity;
+    for (let ring = 0; ring < 60 && !best; ring++) {
+      for (let dc = -ring; dc <= ring; dc++) for (let dr = -ring; dr <= ring; dr++) {
+        if (Math.max(Math.abs(dc), Math.abs(dr)) !== ring) continue;
+        const k = cellKey(c0 + dc, r0 + dr); if (occ.has(k)) continue;
+        const d = Math.hypot((c0 + dc) * GW - tx, (r0 + dr) * GH - ty);
+        if (d < bd) { bd = d; best = [c0 + dc, r0 + dr]; }
+      }
+    }
+    it.cell = cellKey(best[0], best[1]); occ.add(it.cell);
+    it.x = best[0] * GW; it.y = best[1] * GH;
+  }
+}
 function layoutAll() {
+  if (S.items.length > BIG) return gridPlace(S.items);
   computeTargets();
   for (const it of S.items) { it.x = it.tx; it.y = it.ty; }
   relax(new Set(S.items));
 }
 function layoutSome(list) {
+  if (S.items.length > BIG) return gridPlace(list);
   computeTargets();
   const set = new Set(list);
   for (const it of list) if (it.x === undefined || it.fresh) { it.x = it.tx; it.y = it.ty; }
@@ -866,13 +920,13 @@ const app = $('#app'), stage = $('#stage'), world = $('#world'), cardsEl = $('#c
 function renderChrome() {
   document.documentElement.lang = LANG === 'zh' ? 'zh-CN' : 'en';
   $('#tagline').textContent = L('你只管收藏,它负责归位,并告诉你放在了哪', 'You save. It sorts, and shows you where everything went.');
-  $('#pill-sample').textContent = L('示例数据', 'Sample data');
+  $('#pill-sample').textContent = MODE.label ? tr(MODE.label) : L('示例数据', 'Sample data');
   $('#q').placeholder = L('在所有平台里一起搜…', 'Search every platform at once…');
   $('#btn-intake-t').textContent = L('模拟一条新收藏', 'Simulate a new save');
   $('#btn-tour-t').textContent = L('演示导览', 'Guided tour');
   $('#btn-import-t').textContent = L('导入', 'Import');
   $('#btn-lang').textContent = LANG === 'zh' ? 'EN' : '中文';
-  $('#hint-t').innerHTML = L('<b>点任意卡片</b>,一根线会连回它原来的平台。第一次来?点上面的<b>「演示导览」</b>,90 秒看完整个故事。', '<b>Click any card</b> and a thread lights up back to the platform it came from. First time here? Press <b>Guided tour</b> for the 90-second story.');
+  $('#hint-t').innerHTML = MODE.hint ? tr(MODE.hint) : L('<b>点任意卡片</b>,一根线会连回它原来的平台。第一次来?点上面的<b>「演示导览」</b>,90 秒看完整个故事。', '<b>Click any card</b> and a thread lights up back to the platform it came from. First time here? Press <b>Guided tour</b> for the 90-second story.');
   renderModes(); renderTour();
   $('#ask-q').placeholder = L('问问你存过的全部东西…', 'Ask across everything you have saved…');
   $('#ask-go').textContent = L('生成', 'Ask');
@@ -895,7 +949,7 @@ function renderDock() {
     const s = SRC[sid];
     const on = !!S.sel && lit.has(sid);
     const n = S.q ? (hits[sid] || 0) : (counts[sid] || 0);
-    return `<button type="button" class="node${on ? ' on' : ''}" data-src="${sid}" title="${esc(s.n)} · ${esc(tr(s.kind))}" aria-label="${esc(s.n)}">${s.m}<span class="n${S.q ? ' q' : ''}">${n}</span></button>`;
+    return `<button type="button" class="node${on ? ' on' : ''}" data-src="${sid}" title="${esc(s.n)} · ${esc(tr(s.kind))}" aria-label="${esc(s.n)}">${s.m}<span class="n${S.q ? ' q' : ''}${n ? '' : ' z'}">${n}</span></button>`;
   }).join('');
 }
 
@@ -919,10 +973,14 @@ function renderCanvas() {
   if (S.mode === 'silo') {
     const litSrc = new Set([...rel.ids].map((id) => S.byId[id]?.src));
     if (S.sel?.type === 'source') litSrc.add(S.sel.id);
-    hubsEl.innerHTML = SRC_IDS.map((sid, i) => {
-      const n = S.items.filter((it) => it.src === sid).length;
-      return `<button type="button" class="hub silo${litSrc.has(sid) ? ' hi' : ''}" data-src="${sid}" style="left:${(i - (SRC_IDS.length - 1) / 2) * SILO_DX}px;top:${SILO_Y0 - 96}px">
-        <div class="gn">${srcChip(sid)}${esc(SRC[sid].n)}</div><div class="gm">${L(`${n} 条 · 只在这里看得见`, `${n} items · only visible here`)}</div></button>`;
+    hubsEl.innerHTML = S.siloCols.map((c) => {
+      if (MODE.siloBy === 'folder') {
+        const lit = c.ids.some((id) => rel.ids.has(id));
+        return `<button type="button" class="hub silo${lit ? ' hi' : ''}" data-folder="${esc(c.key)}" style="left:${c.x}px;top:${SILO_Y0 - 96}px">
+          <div class="gn">${esc(c.key.split('/').pop() || c.key)}</div><div class="gm">${L(`${c.n} 条`, `${c.n} items`)}</div></button>`;
+      }
+      return `<button type="button" class="hub silo${litSrc.has(c.key) ? ' hi' : ''}" data-src="${c.key}" style="left:${c.x}px;top:${SILO_Y0 - 96}px">
+        <div class="gn">${srcChip(c.key)}${esc(SRC[c.key].n)}</div><div class="gm">${L(`${c.n} 条 · 只在这里看得见`, `${c.n} items · only visible here`)}</div></button>`;
     }).join('');
   } else hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
     const n = memberCount(g.id);
@@ -1044,7 +1102,7 @@ function renderBlobs(rel) {
 function applyTransform() {
   world.style.transform = `translate(${S.tx}px,${S.ty}px) scale(${S.s})`;
   world.style.setProperty('--ls', String(Math.max(1, 0.72 / S.s)));
-  world.style.setProperty('--lss', String(clamp(0.7 / S.s, 1, 1.25)));
+  world.style.setProperty('--lss', String(clamp(0.7 / S.s, 1, MODE.siloBy === 'folder' ? 2.6 : 1.25)));
   world.classList.toggle('far', S.s < 0.34);
   const gs = 26 * S.s;
   stage.style.backgroundSize = `${gs}px ${gs}px`;
@@ -1141,6 +1199,7 @@ function handleStageClick(target) {
   const card = target.closest('.card'); const hub = target.closest('.hub');
   if (card) return select({ type: 'item', id: card.dataset.id });
   if (hub && hub.dataset.src) return select({ type: 'source', id: hub.dataset.src });
+  if (hub && hub.dataset.folder) { const c = S.siloCols.find((x) => x.key === hub.dataset.folder); return select({ type: 'set', ids: c.ids }, { keepPanel: true }); }
   if (hub) return select({ type: 'group', id: hub.dataset.group });
   if (S.sel) select(null);
 }
@@ -1894,7 +1953,9 @@ const SAMPLE_BOOKMARKS = `<!DOCTYPE NETSCAPE-Bookmark-file-1>
 
 /* ================= before / after ================= */
 function renderModes() {
+  if (!S.siloCols) computeSilo();
   $('#modes').innerHTML = [['silo', L('整理前:7 个平台', 'Before: 7 silos')], ['canvas', L('整理后:一张白板', 'After: one canvas')]]
+    .map(([m, label]) => [m, m === 'silo' && MODE.siloBy === 'folder' ? L(`整理前:${S.siloCols?.length || ''} 个文件夹`, `Before: ${S.siloCols?.length || ''} folders`) : label])
     .map(([m, label]) => `<button type="button" data-mode="${m}" class="${S.mode === m ? 'on' : ''}" aria-pressed="${S.mode === m}">${label}</button>`).join('');
 }
 function setMode(m) {
@@ -1984,6 +2045,8 @@ function startTour() {
 }
 function endTour() { S.tour = null; renderTour(); }
 $('#btn-tour').addEventListener('click', () => (S.tour ? endTour() : startTour()));
+if (!MODE.tour) $('#btn-tour').hidden = true;
+if (!INTAKE.length) $('#btn-intake').hidden = true;
 $('#tour').addEventListener('click', (e) => {
   const b = e.target.closest('[data-t]'); if (!b) return;
   const t = b.dataset.t;
@@ -2012,7 +2075,7 @@ $('#btn-lang').addEventListener('click', () => {
   renderChrome(); renderDock(); renderCanvas(); renderPanel(); if (!modal.hidden) renderImportText();
 });
 // Share the link with #tour at the end to open straight into the guided tour.
-if (location.hash === '#tour') setTimeout(startTour, 600);
+if (MODE.tour && location.hash === '#tour') setTimeout(startTour, 600);
 $('#hint-x').addEventListener('click', () => { $('#hint').hidden = true; });
 $('#z-in').addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(1.25, r.width / 2, r.height / 2); });
 $('#z-out').addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(0.8, r.width / 2, r.height / 2); });
