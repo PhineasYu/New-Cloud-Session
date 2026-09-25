@@ -226,10 +226,36 @@ table.inv th.n{text-align:right}
 .toast{pointer-events:auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:13px;box-shadow:var(--shadow-lg);display:flex;gap:10px;align-items:center;animation:tin .3s ease-out}
 .toast .gtag{background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg)}
 @keyframes tin{from{transform:translateY(-8px);opacity:0}}
-.progress{position:absolute;right:14px;top:14px;z-index:3;padding:8px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:12.5px;display:flex;gap:8px;align-items:center}
+.progress{position:absolute;right:14px;top:62px;z-index:3;padding:8px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:12.5px;display:flex;gap:8px;align-items:center}
 .spin{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .mob-toggle{display:none}
+.modes{position:absolute;right:14px;top:14px;z-index:3;display:flex;gap:2px;padding:3px;border-radius:11px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.modes button{height:30px;padding:0 12px;border:0;border-radius:8px;background:none;font-weight:700;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.modes button.on{background:var(--ink);color:var(--bg)}
+.app.touring .modes,.app.touring .hint{display:none}
+svg.blobs{transition:opacity .6s}
+.hub.silo{transform:translate(-50%,-50%) scale(var(--lss))}
+.hub.silo .gn{font-size:17px}
+.world.far .hub.silo .gm{display:none}
+.hub.silo .chip{height:22px;min-width:26px;font-size:12px}
+.xlabel{position:absolute;transform:translate(-50%,-100%) scale(var(--ls));transform-origin:50% 100%;padding:7px 13px;border-radius:999px;background:var(--ink);color:var(--bg);font-family:var(--f-display);font-weight:700;font-size:15px;white-space:nowrap;box-shadow:var(--shadow-lg);pointer-events:none}
+.tour{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:min(500px,calc(100% - 32px));z-index:4;background:var(--ink);color:var(--bg);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:7px;animation:tin .3s ease-out}
+.tour .st{font-family:var(--f-mono);font-size:11px;display:flex;gap:4px;align-items:center}
+.tour .st span{opacity:.7;margin-right:6px}
+.tour .st i{height:3px;flex:1;border-radius:2px;background:currentColor;opacity:.22}
+.tour .st i.on{opacity:.9}
+.tour h3{font-family:var(--f-display);font-size:19px;line-height:1.25;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.tour p{margin:0;font-size:13.5px;line-height:1.5;opacity:.88}
+.tour .tb{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
+.tour .tb button{height:32px;padding:0 12px;border-radius:9px;border:1px solid color-mix(in srgb,var(--bg) 30%,transparent);background:none;color:var(--bg);font-weight:700;font-size:12.5px}
+.tour .tb button.pri{background:var(--bg);color:var(--ink);border-color:var(--bg)}
+.tour .tb .sp{margin-right:auto;border:0;padding:0;opacity:.7}
+.xlist{display:flex;flex-direction:column;gap:6px}
+.xrow{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);text-align:left;width:100%}
+.xrow:hover{border-color:var(--ink)}
+.xrow .nm{font-weight:700;font-size:13px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.xrow .ct{margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap}
 
 /* ---------- narrow screens ---------- */
 @media (max-width:1100px){ .brand .tag{display:none} }
@@ -254,6 +280,7 @@ table.inv th.n{text-align:right}
   .ask .presets{display:none}
   .zoom{bottom:124px}
   .hint{right:14px;max-width:none}
+  .modes{top:auto;bottom:124px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
@@ -276,6 +303,7 @@ table.inv th.n{text-align:right}
       <kbd>/</kbd>
     </label>
     <div class="actions">
+      <button class="btn" id="btn-tour" type="button"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span class="lab" id="btn-tour-t"></span></button>
       <button class="btn" id="btn-intake" type="button"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lab" id="btn-intake-t"></span></button>
       <button class="btn primary" id="btn-import" type="button"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0l-3.5-3.5M8 10l3.5-3.5M2.5 13.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><span class="lab" id="btn-import-t"></span></button>
       <button class="btn ghost sm" id="btn-lang" type="button"></button>
@@ -289,7 +317,10 @@ table.inv th.n{text-align:right}
       <svg class="blobs" id="blobs" viewBox="-4000 -4000 8000 8000" aria-hidden="true"></svg>
       <div id="hubs"></div>
       <div id="cards"></div>
+      <div id="overlay"></div>
     </div>
+    <div class="modes" id="modes" role="group"></div>
+    <div class="tour" id="tour" hidden role="dialog" aria-live="polite"></div>
     <div class="hint" id="hint"><div id="hint-t"></div><button type="button" id="hint-x" aria-label="Close">×</button></div>
     <div class="progress" id="progress" hidden><span class="spin"></span><span id="progress-t"></span></div>
     <div class="zoom">
@@ -682,6 +713,7 @@ const S = {
   tx: 0, ty: 0, s: 1,
   flying: new Set(), intake: 0,
   synth: null, forceCanned: false, busy: false,
+  mode: 'canvas', blobHold: false, tour: null, synthPromise: null,
 };
 for (const [id, g] of Object.entries(GROUPS)) S.groups[id] = { ...g, id };
 
@@ -703,6 +735,24 @@ function placeText(it, lang) {
 
 /* ================= layout ================= */
 const CW = 212, CH = 86, GAP = 16;
+const SILO_DX = 244, SILO_Y0 = -380;
+// Position of a card in the current view: 'silo' = one column per platform (before), 'canvas' = AI groups (after)
+const P = (it) => (S.mode === 'silo' ? [it.sx, it.sy] : [it.x, it.y]);
+function computeSilo() {
+  SRC_IDS.forEach((sid, i) => {
+    let k = 0;
+    for (const it of S.items) if (it.src === sid) { it.sx = (i - (SRC_IDS.length - 1) / 2) * SILO_DX; it.sy = SILO_Y0 + k++ * 102; }
+  });
+}
+function sharedItems(a, b) { return S.items.filter((it) => it.g[a] && it.g[b]); }
+function intersections() {
+  const ids = Object.keys(S.groups); const out = [];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const sh = sharedItems(ids[i], ids[j]);
+    if (sh.length) out.push({ a: ids[i], b: ids[j], items: sh, srcs: new Set(sh.map((it) => it.src)) });
+  }
+  return out.sort((x, y) => y.items.length - x.items.length || y.srcs.size - x.srcs.size);
+}
 function computeTargets() {
   const singles = {};
   for (const it of S.items) {
@@ -794,9 +844,11 @@ function renderChrome() {
   $('#pill-sample').textContent = L('示例数据', 'Sample data');
   $('#q').placeholder = L('在所有平台里一起搜…', 'Search every platform at once…');
   $('#btn-intake-t').textContent = L('模拟一条新收藏', 'Simulate a new save');
+  $('#btn-tour-t').textContent = L('演示导览', 'Guided tour');
   $('#btn-import-t').textContent = L('导入', 'Import');
   $('#btn-lang').textContent = LANG === 'zh' ? 'EN' : '中文';
-  $('#hint-t').innerHTML = L('<b>点任意卡片</b>,一根线会连回它原来的平台。拖动画布平移,滚轮或双指缩放。', '<b>Click any card</b> and a thread lights up back to the platform it came from. Drag to pan, scroll or pinch to zoom.');
+  $('#hint-t').innerHTML = L('<b>点任意卡片</b>,一根线会连回它原来的平台。第一次来?点上面的<b>「演示导览」</b>,90 秒看完整个故事。', '<b>Click any card</b> and a thread lights up back to the platform it came from. First time here? Press <b>Guided tour</b> for the 90-second story.');
+  renderModes(); renderTour();
   $('#ask-q').placeholder = L('问问你存过的全部东西…', 'Ask across everything you have saved…');
   $('#ask-go').textContent = L('生成', 'Ask');
   $('#presets').innerHTML = PRESETS.map((p) => `<button type="button" class="preset" data-preset="${p.k}">${esc(tr(p.q))}</button>`).join('');
@@ -812,9 +864,11 @@ function renderAIPill() {
 function renderDock() {
   const counts = {}; const hits = {};
   for (const it of S.items) { counts[it.src] = (counts[it.src] || 0) + 1; if (S.q && matches(it)) hits[it.src] = (hits[it.src] || 0) + 1; }
+  const lit = new Set([...threadIds()].map((id) => S.byId[id]?.src));
+  if (S.sel?.type === 'source') lit.add(S.sel.id);
   dock.innerHTML = `<div class="cap">${L('来源', 'Sources')}</div>` + SRC_IDS.map((sid) => {
     const s = SRC[sid];
-    const on = S.sel && ((S.sel.type === 'source' && S.sel.id === sid) || (S.sel.type === 'item' && S.byId[S.sel.id]?.src === sid));
+    const on = !!S.sel && lit.has(sid);
     const n = S.q ? (hits[sid] || 0) : (counts[sid] || 0);
     return `<button type="button" class="node${on ? ' on' : ''}" data-src="${sid}" style="--nc:${s.c};background:${s.c};color:${s.fg}" title="${esc(s.n)} · ${esc(tr(s.kind))}" aria-label="${esc(s.n)}">${s.m}<span class="n${S.q ? ' q' : ''}">${n}</span></button>`;
   }).join('');
@@ -829,13 +883,23 @@ function relatedIds() {
   if (sel.type === 'group') { gs.add(sel.id); for (const it of S.items) if (it.g[sel.id]) ids.add(it.id); }
   if (sel.type === 'source') for (const it of S.items) if (it.src === sel.id) ids.add(it.id);
   if (sel.type === 'set') for (const id of sel.ids) ids.add(id);
+  if (sel.type === 'inter') { gs.add(sel.a); gs.add(sel.b); for (const it of sharedItems(sel.a, sel.b)) ids.add(it.id); }
   return { ids, gs, active: true };
 }
 function renderCanvas() {
   const rel = relatedIds();
   world.classList.toggle('dim', rel.active);
-  // hubs
-  hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
+  computeSilo();
+  // hubs (canvas) or platform column headers (silo)
+  if (S.mode === 'silo') {
+    const litSrc = new Set([...rel.ids].map((id) => S.byId[id]?.src));
+    if (S.sel?.type === 'source') litSrc.add(S.sel.id);
+    hubsEl.innerHTML = SRC_IDS.map((sid, i) => {
+      const n = S.items.filter((it) => it.src === sid).length;
+      return `<button type="button" class="hub silo${litSrc.has(sid) ? ' hi' : ''}" data-src="${sid}" style="left:${(i - (SRC_IDS.length - 1) / 2) * SILO_DX}px;top:${SILO_Y0 - 96}px">
+        <div class="gn">${srcChip(sid)}${esc(SRC[sid].n)}</div><div class="gm">${L(`${n} 条 · 只在这里看得见`, `${n} items · only visible here`)}</div></button>`;
+    }).join('');
+  } else hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
     const n = memberCount(g.id);
     const srcs = new Set(S.items.filter((it) => it.g[g.id]).map((it) => it.src)).size;
     return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1]}px">
@@ -846,21 +910,29 @@ function renderCanvas() {
   const existing = new Map([...cardsEl.children].map((c) => [c.dataset.id, c]));
   for (const it of S.items) {
     let c = existing.get(it.id);
-    if (!c) { c = document.createElement('button'); c.type = 'button'; c.className = 'card'; c.dataset.id = it.id; cardsEl.appendChild(c); if (!it.skipInit) c.style.transform = `translate(${it.x - CW / 2}px,${it.y - CH / 2}px)`; }
+    const [px, py] = P(it);
+    if (!c) { c = document.createElement('button'); c.type = 'button'; c.className = 'card'; c.dataset.id = it.id; cardsEl.appendChild(c); if (!it.skipInit) c.style.transform = `translate(${px - CW / 2}px,${py - CH / 2}px)`; }
     existing.delete(it.id);
     const s = SRC[it.src];
     const gs = Object.entries(it.g).filter(([g]) => S.groups[g]);
     c.style.setProperty('--sc', s.c);
     c.classList.toggle('q', isQ(it));
-    c.classList.toggle('sel', !!(S.sel && S.sel.type === 'item' && S.sel.id === it.id) || (S.sel?.type === 'set' && rel.ids.has(it.id)));
+    c.classList.toggle('sel', !!(S.sel && S.sel.type === 'item' && S.sel.id === it.id) || ((S.sel?.type === 'set' || S.sel?.type === 'inter') && rel.ids.has(it.id)));
     c.classList.toggle('hi', rel.ids.has(it.id) || (S.sel?.type === 'item' && gs.some(([g]) => rel.gs.has(g)) && !S.q));
     c.setAttribute('aria-label', `${s.n}: ${it.t}`);
     c.innerHTML = `<div class="row">${srcChip(it.src)}<span class="meta">${esc(tr(it.meta))}</span></div>
       <div class="t">${esc(it.t)}</div>
       <div class="gs">${gs.map(([g, m]) => `<i style="background:${S.groups[g].c};opacity:${m[0] < 0.6 ? 0.45 : 1}" title="${esc(gName(g))}"></i>`).join('')}${isQ(it) ? `<span class="unsure">${L('拿不准', 'unsure')}</span>` : ''}</div>`;
-    if (!it.flyingNow) c.style.transform = `translate(${it.x - CW / 2}px,${it.y - CH / 2}px)`;
+    if (!it.flyingNow) c.style.transform = `translate(${px - CW / 2}px,${py - CH / 2}px)`;
   }
   for (const c of existing.values()) c.remove();
+  // floating label on an intersection
+  const ov = $('#overlay');
+  if (S.sel?.type === 'inter' && S.mode === 'canvas') {
+    const sh = sharedItems(S.sel.a, S.sel.b);
+    const cx = sh.reduce((a, it) => a + it.x, 0) / (sh.length || 1), top = Math.min(...sh.map((it) => it.y)) - CH / 2 - 14;
+    ov.innerHTML = sh.length ? `<div class="xlabel" style="left:${cx}px;top:${top}px">${esc(gName(S.sel.a))} × ${esc(gName(S.sel.b))} · ${sh.length}</div>` : '';
+  } else ov.innerHTML = '';
   renderBlobs(rel);
 }
 function renderBlobs(rel) {
@@ -883,12 +955,14 @@ function renderBlobs(rel) {
     body += `<g class="blob${hi ? ' hi' : ''}" filter="url(#fx-${g.id})">${shapes}</g>`;
   }
   blobsEl.innerHTML = defs + '</defs>' + body;
+  blobsEl.style.opacity = S.mode === 'silo' || S.blobHold ? '0' : '1';
 }
 
 /* ================= transform (pan/zoom) ================= */
 function applyTransform() {
   world.style.transform = `translate(${S.tx}px,${S.ty}px) scale(${S.s})`;
   world.style.setProperty('--ls', String(Math.max(1, 0.72 / S.s)));
+  world.style.setProperty('--lss', String(clamp(0.7 / S.s, 1, 1.25)));
   world.classList.toggle('far', S.s < 0.34);
   const gs = 26 * S.s;
   stage.style.backgroundSize = `${gs}px ${gs}px`;
@@ -896,36 +970,33 @@ function applyTransform() {
 }
 function bounds(list) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (const it of list) { x0 = Math.min(x0, it.x - CW / 2); y0 = Math.min(y0, it.y - CH / 2); x1 = Math.max(x1, it.x + CW / 2); y1 = Math.max(y1, it.y + CH / 2); }
+  for (const it of list) { const [x, y] = P(it); x0 = Math.min(x0, x - CW / 2); y0 = Math.min(y0, y - CH / 2); x1 = Math.max(x1, x + CW / 2); y1 = Math.max(y1, y + CH / 2); }
+  if (S.mode === 'silo') { y0 = Math.min(y0, SILO_Y0 - 130); return { x0, y0, x1, y1 }; }
   for (const g of Object.values(S.groups)) if (memberCount(g.id) && list === S.items) { x0 = Math.min(x0, g.hub[0] - 140); x1 = Math.max(x1, g.hub[0] + 140); y0 = Math.min(y0, g.hub[1] - 50); y1 = Math.max(y1, g.hub[1] + 50); }
   return { x0, y0, x1, y1 };
 }
-function initialView() {
-  // Open close enough to read the cards; the fit button (⤢) shows the whole board.
+const padTop = () => (S.tour ? (window.innerWidth <= 860 ? 210 : 170) : 20);
+const padBottom = () => (window.innerWidth <= 860 ? 130 : 110);
+function fitTo(list, animate, minS = 0.18, maxS = 1.2) {
   const r = stage.getBoundingClientRect();
-  const main = S.items.filter((it) => !it.g.life);
-  const b = bounds(main);
-  const padB = window.innerWidth <= 860 ? 130 : 110;
-  const fitS = Math.min((r.width - 40) / (b.x1 - b.x0), (r.height - padB - 30) / (b.y1 - b.y0));
-  const s = clamp(fitS, window.innerWidth <= 860 ? 0.38 : 0.5, 1.1);
-  animateTo(r.width / 2 - ((b.x0 + b.x1) / 2) * s, (r.height - padB) / 2 + 10 - ((b.y0 + b.y1) / 2) * s, s, false);
+  const b = bounds(list);
+  const pt = padTop(), pb = padBottom();
+  const s = clamp(Math.min((r.width - 40) / (b.x1 - b.x0), (r.height - pb - pt) / (b.y1 - b.y0)), minS, maxS);
+  animateTo(r.width / 2 - ((b.x0 + b.x1) / 2) * s, pt + (r.height - pb - pt) / 2 - ((b.y0 + b.y1) / 2) * s, s, animate);
 }
-function fit(animate) {
-  const r = stage.getBoundingClientRect();
-  const b = bounds(S.items);
-  const padB = window.innerWidth <= 860 ? 130 : 110;
-  const s = clamp(Math.min((r.width - 40) / (b.x1 - b.x0), (r.height - padB - 30) / (b.y1 - b.y0)), 0.18, 1.2);
-  const tx = r.width / 2 - ((b.x0 + b.x1) / 2) * s;
-  const ty = (r.height - padB) / 2 + 10 - ((b.y0 + b.y1) / 2) * s;
-  animateTo(tx, ty, s, animate);
-}
+function fit(animate) { fitTo(S.items, animate); }
+// Frame the main groups at a readable zoom (the Life group sits off to the side)
+function fitMain(animate) { if (S.mode === 'silo') return fit(animate); fitTo(S.items.filter((it) => !it.g.life), animate, 0.36, 1.1); }
+// Open close enough to read the cards; the fit button (⤢) shows the whole board.
+function initialView() { fitTo(S.items.filter((it) => !it.g.life), false, window.innerWidth <= 860 ? 0.38 : 0.5, 1.1); }
 function centerOn(it, minScale) {
   const r = stage.getBoundingClientRect();
-  const sx = S.tx + it.x * S.s, sy = S.ty + it.y * S.s;
-  const inside = sx > 80 && sx < r.width - 80 && sy > 60 && sy < r.height - 140;
+  const [x, y] = P(it);
+  const sx = S.tx + x * S.s, sy = S.ty + y * S.s;
+  const inside = sx > 80 && sx < r.width - 80 && sy > padTop() + 40 && sy < r.height - 140;
   const s = Math.max(S.s, minScale || 0);
   if (inside && s === S.s) return;
-  animateTo(r.width / 2 - it.x * s, (r.height - 120) / 2 - it.y * s, s, true);
+  animateTo(r.width / 2 - x * s, (padTop() + r.height - 120) / 2 - y * s, s, true);
 }
 let animRaf = 0;
 function animateTo(tx, ty, s, animate) {
@@ -949,7 +1020,7 @@ function zoomAt(f, cx, cy) {
 /* pointer handling */
 const pointers = new Map(); let drag = null; let moved = false;
 stage.addEventListener('pointerdown', (e) => {
-  if (e.target.closest('.ask,.zoom,.hint,.progress')) return;
+  if (e.target.closest('.ask,.zoom,.hint,.progress,.modes,.tour')) return;
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   stage.setPointerCapture(e.pointerId);
   moved = false;
@@ -987,12 +1058,13 @@ stage.addEventListener('wheel', (e) => {
 function handleStageClick(target) {
   const card = target.closest('.card'); const hub = target.closest('.hub');
   if (card) return select({ type: 'item', id: card.dataset.id });
+  if (hub && hub.dataset.src) return select({ type: 'source', id: hub.dataset.src });
   if (hub) return select({ type: 'group', id: hub.dataset.group });
   if (S.sel) select(null);
 }
 // keyboard activation of cards and hubs
 cardsEl.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.card')) { e.preventDefault(); select({ type: 'item', id: e.target.closest('.card').dataset.id }); } });
-hubsEl.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.hub')) { e.preventDefault(); select({ type: 'group', id: e.target.closest('.hub').dataset.group }); } });
+hubsEl.addEventListener('keydown', (e) => { const h = e.target.closest('.hub'); if ((e.key === 'Enter' || e.key === ' ') && h) { e.preventDefault(); select(h.dataset.src ? { type: 'source', id: h.dataset.src } : { type: 'group', id: h.dataset.group }); } });
 
 /* ================= threads ================= */
 const threadEls = new Map();
@@ -1002,6 +1074,7 @@ function threadIds() {
   if (S.sel.type === 'item') ids.add(S.sel.id);
   if (S.sel.type === 'source') for (const it of S.items) if (it.src === S.sel.id) ids.add(it.id);
   if (S.sel.type === 'set') for (const id of S.sel.ids) ids.add(id);
+  if (S.sel.type === 'inter') for (const it of sharedItems(S.sel.a, S.sel.b)) ids.add(it.id);
   return ids;
 }
 function drawThreads() {
@@ -1078,6 +1151,7 @@ function renderPanel() {
   if (S.sel && !S.keepPanel && S.sel.type === 'item') html = itemView(S.byId[S.sel.id]);
   else if (S.sel && !S.keepPanel && S.sel.type === 'group') html = groupView(S.groups[S.sel.id]);
   else if (S.sel && !S.keepPanel && S.sel.type === 'source') html = sourceView(S.sel.id);
+  else if (S.sel && !S.keepPanel && S.sel.type === 'inter') html = interView(S.sel.a, S.sel.b);
   else if (S.q && !S.sel) html = searchView();
   else html = ({ log: logView, review: reviewView, inv: invView, synth: synthView })[S.tab]();
   pbody.innerHTML = html;
@@ -1123,7 +1197,19 @@ function groupView(g) {
   <h2>${esc(tr(g.name))}</h2>
   <div class="box"><div class="lbl" style="margin-bottom:6px">${L('这个组收什么', 'What belongs here')}</div>${esc(tr(g.def))}</div>
   <div class="note">${L(`${mem.length} 条,来自 ${Object.keys(bySrc).length} 个平台。一条收藏可以同时属于好几个组,重叠的地方就是它们的交集。`, `${mem.length} items from ${Object.keys(bySrc).length} platforms. One save can belong to several groups; where the shapes overlap is the intersection.`)}</div>
+  ${(() => { const xs = intersections().filter((x) => x.a === g.id || x.b === g.id); return xs.length ? `<div class="lbl">${L('和其他组的交汇', 'Where it meets other groups')}</div><div class="xlist">${xs.map(xRow).join('')}</div>` : ''; })()}
   ${Object.entries(bySrc).map(([sid, arr]) => `<div class="list"><div class="srcline" style="margin:4px 0">${srcChip(sid)}<b style="color:var(--ink)">${SRC[sid].n}</b><span>${arr.length}</span></div>${arr.map((it) => evtRow(it, null, [g.id])).join('')}</div>`).join('')}`;
+}
+function xRow(x) {
+  return `<button type="button" class="xrow" data-act="inter" data-a="${x.a}" data-b="${x.b}"><span class="nm">${gTag(x.a)}<span style="color:var(--muted)">×</span>${gTag(x.b)}</span><span class="ct">${L(`${x.items.length} 条 · ${x.srcs.size} 个平台`, `${x.items.length} · ${x.srcs.size} platforms`)}</span></button>`;
+}
+function interView(a, b) {
+  const sh = sharedItems(a, b); const srcs = new Set(sh.map((it) => it.src));
+  return `${backBtn()}
+  <div class="srcline"><span class="gdot" style="background:${S.groups[a].c}"></span><span class="gdot" style="background:${S.groups[b].c}"></span><span>${L('交汇点', 'Intersection')}</span></div>
+  <h2>${esc(gName(a))} × ${esc(gName(b))}</h2>
+  <p class="note" style="margin:0">${L(`${sh.length} 条收藏同时属于这两个组,来自 ${srcs.size} 个平台。交汇处常常是你还没说出口、但已经在琢磨的方向。`, `${sh.length} saves belong to both groups, from ${srcs.size} platforms. Intersections are often the idea you are already circling but have not said out loud.`)}</p>
+  <div class="list">${sh.map((it) => `${evtRow(it)}<div class="note" style="padding:0 8px 8px 40px;font-size:12px">${esc(tr([it.g[a][1], it.g[a][2]]))} ${esc(tr([it.g[b][1], it.g[b][2]]))}</div>`).join('')}</div>`;
 }
 function sourceView(sid) {
   const s = SRC[sid]; const arr = S.items.filter((it) => it.src === sid);
@@ -1178,6 +1264,8 @@ function invView() {
   <div class="box" style="overflow-x:auto"><table class="inv"><thead><tr><th>${L('平台', 'Platform')}</th><th class="n">${L('接收', 'In')}</th><th class="n">${L('理解', 'Sorted')}</th><th class="n">${L('拿不准', 'Unsure')}</th></tr></thead><tbody>
   ${rows.map((r) => `<tr><td><span style="display:inline-flex;gap:6px;align-items:center">${srcChip(r.sid)}${SRC[r.sid].n}</span></td><td class="n">${r.n}</td><td class="n">${r.n - r.q}</td><td class="n" style="color:${r.q ? 'var(--warn)' : 'inherit'}">${r.q}</td></tr>`).join('')}
   </tbody></table></div>
+  <div class="lbl">${L('交汇最多的地方', 'Biggest intersections')}</div>
+  <div class="xlist">${intersections().slice(0, 5).map(xRow).join('')}</div>
   <div class="lbl">${L('主题分布,以及它们横跨了哪些平台', 'Themes, and which platforms they span')}</div>
   <div class="box" style="overflow-x:auto"><table class="inv"><tbody>
   ${groups.map(({ g, n, srcs }) => `<tr><td><button type="button" class="gtag" data-act="group" data-g="${g.id}"><i style="background:${g.c}"></i>${esc(tr(g.name))}</button></td><td class="n">${n}</td><td><span class="spread">${SRC_IDS.map((sid) => `<i title="${SRC[sid].n}" style="${srcs.has(sid) ? `background:${SRC[sid].c}` : ''}"></i>`).join('')}</span></td></tr>`).join('')}
@@ -1257,11 +1345,12 @@ pbody.addEventListener('click', (e) => {
   if (act === 'back') return select(null);
   if (act === 'open') return select({ type: 'item', id }, { center: true });
   if (act === 'group') return select({ type: 'group', id: gid });
+  if (act === 'inter') return focusInter(b.dataset.a, b.dataset.b);
   if (act === 'confirm') return confirmMem(id, gid);
   if (act === 'remove') return removeMem(id, gid);
   if (act === 'addg') { const v = $('#addg-sel').value; if (v) addMem(id, v); return; }
   if (act === 'cite') { const same = S.sel && S.sel.type === 'item' && S.sel.id === id; select(same ? null : { type: 'item', id }, { keepPanel: true, center: !same, minScale: 0.55 }); return; }
-  if (act === 'showall') { const ids = citeOrder(S.synth.text); select({ type: 'set', ids }, { keepPanel: true }); fit(true); return; }
+  if (act === 'showall') return showAllSources();
   if (act === 'stop') { synthCtl?.abort(); return; }
 });
 pbody.addEventListener('change', (e) => {
@@ -1323,6 +1412,7 @@ function dockWorldPoint(sid) {
   return [(sx - S.tx) / S.s, (sy - S.ty) / S.s];
 }
 async function arrive(raw, opts = {}) {
+  if (S.mode === 'silo') { setMode('canvas'); await sleep(1100); }
   const it = addItem(raw, nowStamp());
   it.fresh = true;
   layoutSome([it]);
@@ -1350,13 +1440,14 @@ async function arrive(raw, opts = {}) {
   setTimeout(() => world.classList.remove('anim'), 50);
   return it;
 }
-$('#btn-intake').addEventListener('click', async () => {
+async function intakeOne() {
   if (S.intake >= INTAKE.length) { toast(L('演示里的新收藏都到了。试试「导入」你自己的文件。', 'All demo saves have arrived. Try importing your own file.')); return; }
   const raw = INTAKE[S.intake++];
   S.tab = 'log';
   await arrive({ ...raw, when: nowStamp().slice(0, 10) }, { center: true });
   if (S.intake >= INTAKE.length) $('#btn-intake').disabled = true;
-});
+}
+$('#btn-intake').addEventListener('click', intakeOne);
 
 /* ================= live AI (artifact runtime) ================= */
 let sampleFn = null;
@@ -1369,27 +1460,28 @@ const disableLive = (code) => ['not_granted', 'sampling_disabled', 'not_declared
 
 /* ================= synthesis ================= */
 let synthCtl = null;
-function runPreset(k) {
+function runPreset(k, opts) {
   const p = PRESETS.find((x) => x.k === k);
-  runSynth(tr(p.q), p);
+  S.synthPromise = runSynth(tr(p.q), p, opts);
+  return S.synthPromise;
 }
 $('#ask').addEventListener('submit', (e) => {
   e.preventDefault();
   const q = $('#ask-q').value.trim(); if (!q) return;
   const p = PRESETS.find((x) => x.q.some((s) => s === q));
-  runSynth(q, p || null);
+  S.synthPromise = runSynth(q, p || null);
 });
 $('#presets').addEventListener('click', (e) => { const b = e.target.closest('[data-preset]'); if (b) runPreset(b.dataset.preset); });
 
 function itemsForPrompt() {
   return S.items.map((it) => `[${it.id}] ${SRC[it.src].n} ${tr(SRC[it.src].kind)} | groups: ${Object.keys(it.g).map((g) => S.groups[g]?.name[1] || g).join(', ')} | ${it.t} | ${(it.snip || '').slice(0, 220)}`).join('\n');
 }
-async function runSynth(q, preset) {
+async function runSynth(q, preset, opts = {}) {
   synthCtl?.abort();
   S.tab = 'synth'; S.sel = null; S.keepPanel = false; S.q = ''; $('#q').value = '';
   panel.classList.add('open');
   renderDock(); renderCanvas();
-  const useLive = sampleFn && !S.forceCanned;
+  const useLive = sampleFn && !S.forceCanned && !opts.canned;
   S.synth = { q, text: '', done: false, live: !!useLive, note: '' };
   renderPanel();
   const ctl = new AbortController(); synthCtl = ctl;
@@ -1706,12 +1798,115 @@ const SAMPLE_BOOKMARKS = `<!DOCTYPE NETSCAPE-Bookmark-file-1>
 </DL><p>
 </DL><p>`;
 
+/* ================= before / after ================= */
+function renderModes() {
+  $('#modes').innerHTML = [['silo', L('整理前:7 个平台', 'Before: 7 silos')], ['canvas', L('整理后:一张白板', 'After: one canvas')]]
+    .map(([m, label]) => `<button type="button" data-mode="${m}" class="${S.mode === m ? 'on' : ''}" aria-pressed="${S.mode === m}">${label}</button>`).join('');
+}
+function setMode(m) {
+  if (S.mode === m) return;
+  S.mode = m;
+  if (m === 'canvas') S.blobHold = true;
+  computeSilo();
+  world.classList.add('anim');
+  cardsEl.querySelectorAll('.card').forEach((c) => { c.style.transitionDelay = `${Math.round(hash(c.dataset.id + m) * 320)}ms`; });
+  renderCanvas(); renderModes(); fit(true);
+  clearTimeout(setMode.t);
+  setMode.t = setTimeout(() => {
+    world.classList.remove('anim'); S.blobHold = false; renderBlobs();
+    cardsEl.querySelectorAll('.card').forEach((c) => { c.style.transitionDelay = ''; });
+  }, 1350);
+}
+$('#modes').addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode); });
+function focusInter(a, b) {
+  if (S.mode === 'silo') setMode('canvas');
+  select({ type: 'inter', a, b });
+  const sh = sharedItems(a, b);
+  if (sh.length) fitTo(sh, true, 0.3, 0.8);
+}
+function showAllSources() {
+  if (!S.synth) return;
+  select({ type: 'set', ids: citeOrder(S.synth.text) }, { keepPanel: true });
+  fitMain(true);
+}
+
+/* ================= guided tour ================= */
+const TOUR = [
+  { t: ['7 个平台,各自为政', '7 platforms, 7 silos'],
+    b: ['这是一个人真实的处境:3 个 AI 的聊天记录,4 个平台的收藏,一共 41 样东西。每个 AI 只看得见自己那一列,人也记不住哪一列里有什么。', 'This is one person\'s reality: chats in 3 AIs and saves on 4 platforms, 41 things in total. Each AI sees only its own column, and nobody remembers what is in which one.'],
+    run: () => { select(null); setMode('silo'); } },
+  { t: ['AI 把它们放到一张白板上', 'AI puts it all on one canvas'],
+    b: ['导入之后,AI 自动分组。一条收藏可以同时属于好几个组,形状重叠的地方就是交集。原件一样都没动。', 'After import, AI groups everything. One save can belong to several groups; where the shapes overlap is the intersection. No original was moved.'],
+    run: () => { select(null); if (S.mode === 'canvas') fitMain(true); else { setMode('canvas'); fitMain(true); } } },
+  { t: ['点一张卡片:它从哪来?', 'Click a card: where did it come from?'],
+    b: ['一根线连回 YouTube,证明东西没被搬走。它同时在学习、AI、设计三个组里,右边写着每个组的理由和把握度。', 'A thread leads back to YouTube: the original never moved. It sits in Learning, AI and Design at once, and the panel gives the reason and confidence for each.'],
+    run: () => { if (S.mode === 'silo') setMode('canvas'); select({ type: 'item', id: 'y5' }, { center: true, minScale: 0.62 }); } },
+  { t: ['一个平台的全部', 'Everything from one platform'],
+    b: ['点平台图标,这个平台的所有收藏一起亮起来,看得见每一条分别去了哪里。', 'Click a platform and all its saves light up, so you can see where each one went.'],
+    run: () => { if (S.mode === 'silo') setMode('canvas'); fitMain(true); select({ type: 'source', id: 'reddit' }); } },
+  { t: ['持续流入,不用多做一步', 'New saves sort themselves'],
+    b: ['你照常在原平台点收藏。新内容自己飞进对应的组,右边留下一条记录。', 'You keep saving where you already save. New items fly into the right groups on their own and leave a record on the right.'],
+    run: async () => { select(null); S.tab = 'log'; renderPanel(); if (!S.tour.intake && S.intake < INTAKE.length) { S.tour.intake = true; await intakeOne(); } } },
+  { t: ['拿不准的,主动说出来', 'It tells you when it is unsure'],
+    b: ['AI 把没把握的标出来,不会悄悄放错。一键确认或移出,每次纠正都写进整理记录。看得见它怎么想,才敢把东西交给它。', 'The AI flags what it is unsure about instead of quietly misfiling it. Confirm or remove with one click, and every correction is recorded. You can hand things over because you can see how it thinks.'],
+    run: () => { select(null); S.tab = 'review'; panel.classList.add('open'); renderPanel(); } },
+  { t: ['交汇处就是新想法', 'Intersections are where ideas come from'],
+    b: ['「AI 工具」和「创业想法」的交集里,是同一个痛点在好几个平台上被反复收藏。交汇处常常就是你还没说出口的想法。', 'Inside "AI tools" × "Startup idea" is the same pain point, saved again and again on different platforms. Intersections are often the idea you have not said out loud yet.'],
+    run: () => focusInter('ai', 'startup') },
+  { t: ['把 7 个平台综合起来', 'Synthesize across all 7 platforms'],
+    b: ['「帮我写一份简历」:它同时读 7 个平台的内容。任何单独一个 AI 都只看得见其中一部分。', '"Draft my résumé": it reads all 7 platforms at once. Any single AI would see only part of this.'],
+    run: () => { if (S.mode === 'silo') setMode('canvas'); fitMain(true); runPreset('resume', { canned: true }); } },
+  { t: ['每一句都追得到原件', 'Every sentence traces back'],
+    b: ['每句话都带出处。点一个编号就能看到那张卡片;下面这一步把所有出处一起连回原平台。', 'Every sentence carries a source. Click a number to see its card; this step lights up every source back to its platform.'],
+    run: async () => { if (!S.synth || S.synth.q !== tr(PRESETS[0].q)) runPreset('resume', { canned: true }); await S.synthPromise; if (S.tour) showAllSources(); } },
+  { t: ['你只管收藏。', 'You just save.'],
+    b: ['它负责归位,告诉你东西去了哪,并把散落的东西串成新想法。', 'It sorts, shows you where everything went, and turns scattered pieces into new ideas.'],
+    end: true, run: () => { select(null); S.tab = 'inv'; renderPanel(); fitMain(true); } },
+];
+function renderTour() {
+  const el = $('#tour');
+  app.classList.toggle('touring', !!S.tour);
+  if (!S.tour) { el.hidden = true; return; }
+  const i = S.tour.i, st = TOUR[i];
+  el.hidden = false;
+  el.innerHTML = `<div class="st"><span>${i + 1} / ${TOUR.length}</span>${TOUR.map((_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}</div>
+    <h3>${esc(tr(st.t))}</h3><p>${esc(tr(st.b))}</p>
+    <div class="tb">${st.end
+      ? `<button type="button" data-t="import">${L('导入你自己的书签', 'Import your own bookmarks')}</button><button type="button" class="pri" data-t="exit">${L('自己逛逛', 'Explore on my own')}</button>`
+      : `<button type="button" class="sp" data-t="exit">${L('退出导览', 'Exit tour')}</button>${i > 0 ? `<button type="button" data-t="prev">← ${L('上一步', 'Back')}</button>` : ''}<button type="button" class="pri" data-t="next">${L('下一步', 'Next')} →</button>`}</div>`;
+}
+function goTour(i) {
+  if (!S.tour) return;
+  S.tour.i = clamp(i, 0, TOUR.length - 1);
+  renderTour();
+  Promise.resolve().then(() => TOUR[S.tour.i].run()).catch(() => {});
+}
+function startTour() {
+  synthCtl?.abort();
+  S.q = ''; $('#q').value = '';
+  S.tour = { i: 0, intake: false };
+  goTour(0);
+}
+function endTour() { S.tour = null; renderTour(); }
+$('#btn-tour').addEventListener('click', () => (S.tour ? endTour() : startTour()));
+$('#tour').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  const t = b.dataset.t;
+  if (t === 'next') goTour(S.tour.i + 1);
+  if (t === 'prev') goTour(S.tour.i - 1);
+  if (t === 'exit') endTour();
+  if (t === 'import') { endTour(); openImport(); }
+});
+
 /* ================= top-level events ================= */
 $('#q').addEventListener('input', (e) => { S.q = e.target.value; if (S.q) { S.sel = null; panel.classList.add('open'); } renderDock(); renderCanvas(); renderPanel(); });
 document.addEventListener('keydown', (e) => {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); $('#q').focus(); }
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if (S.tour && !typing && modal.hidden && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); goTour(S.tour.i + (e.key === 'ArrowRight' ? 1 : -1)); return; }
   if (e.key === 'Escape') {
     if (!modal.hidden) return closeImport();
+    if (S.tour) return endTour();
     if (S.q) { S.q = ''; $('#q').value = ''; renderDock(); renderCanvas(); renderPanel(); return; }
     if (S.sel) select(null);
   }
@@ -1721,11 +1916,12 @@ $('#btn-lang').addEventListener('click', () => {
   try { localStorage.setItem('fcc-lang', LANG); } catch (e) {}
   renderChrome(); renderDock(); renderCanvas(); renderPanel(); if (!modal.hidden) renderImportText();
 });
+// Share the link with #tour at the end to open straight into the guided tour.
+if (location.hash === '#tour') setTimeout(startTour, 600);
 $('#hint-x').addEventListener('click', () => { $('#hint').hidden = true; });
 $('#z-in').addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(1.25, r.width / 2, r.height / 2); });
 $('#z-out').addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(0.8, r.width / 2, r.height / 2); });
 $('#z-fit').addEventListener('click', () => fit(true));
-let rz = 0; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => fit(false), 150); });
 
 /* ================= boot ================= */
 for (const raw of SEED) addItem(raw);
