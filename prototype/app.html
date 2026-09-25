@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
-  --bg:#F4F6F9; --grid:rgba(40,60,100,.09); --panel:#FFFFFF; --card:#FFFFFF; --card-2:#EEF1F6;
+  --bg:#FAFBFD; --grid:rgba(40,60,100,.075); --panel:#FFFFFF; --card:#FFFFFF; --card-2:#EEF1F6;
   --ink:#151B28; --muted:#687386; --line:#E1E6EE; --accent:#3D5CE0; --accent-ink:#FFFFFF;
   --accent-soft:rgba(61,92,224,.09); --warn:#A8700F; --warn-soft:rgba(214,150,30,.13); --ok:#2E8A5C; --bad:#B8403A;
   --shadow:0 1px 2px rgba(20,30,60,.05),0 4px 14px rgba(20,30,60,.05); --shadow-lg:0 12px 40px rgba(20,30,60,.14);
@@ -37,7 +37,17 @@ b,strong,h1,h2,h3,h4{font-weight:500}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-.app{position:relative;height:100%;display:grid;grid-template-columns:72px minmax(0,1fr) 372px;grid-template-rows:56px minmax(0,1fr)}
+.app{position:relative;height:100%;display:grid;grid-template-columns:72px minmax(0,1fr) 372px;grid-template-rows:56px minmax(0,1fr);transition:grid-template-columns .28s ease}
+.app.pclosed{grid-template-columns:72px minmax(0,1fr) 48px}
+.app.pclosed .tabs,.app.pclosed .pbody{display:none}
+.prail{display:none;flex-direction:column;align-items:center;gap:12px;padding-block:12px;height:100%;border:0;background:none;width:100%;color:var(--muted)}
+.app.pclosed .prail{display:flex}
+.prail:hover{color:var(--ink);background:var(--card-2)}
+.prail .ico{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;background:var(--card)}
+.prail .vt{writing-mode:vertical-rl;font-size:12.5px;letter-spacing:.06em}
+.prail .c{font-size:10.5px;background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:1px 5px}
+.pcol{margin-left:auto;align-self:center;width:28px;height:28px;border-radius:8px;border:1px solid transparent;background:none;color:var(--muted);display:grid;place-items:center}
+.pcol:hover{border-color:var(--line);color:var(--ink)}
 
 /* ---------- top bar ---------- */
 .top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--panel);position:relative;z-index:6}
@@ -85,6 +95,7 @@ b,strong,h1,h2,h3,h4{font-weight:500}
 .hub .gn{font-family:var(--f-display);font-weight:500;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;justify-content:center}
 .hub .gn i{width:11px;height:11px;border-radius:4px;display:inline-block}
 .hub .gm{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.hub .gn,.hub .gm{text-shadow:0 0 4px var(--bg),0 0 8px var(--bg),0 0 12px var(--bg)}
 .hub:hover .gn{color:var(--accent)}
 .card{position:absolute;left:0;top:0;width:212px;height:86px;padding:9px 11px 8px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;transition:opacity .35s,box-shadow .2s,border-color .2s,background .35s}
 .world.anim .card{transition:transform .95s cubic-bezier(.2,.8,.2,1),opacity .35s,box-shadow .2s,border-color .2s,background .35s}
@@ -279,6 +290,7 @@ svg.blobs{transition:opacity .6s}
   .panel .pbody{display:none}
   .panel.open .pbody{display:flex}
   .tabs{overflow-x:auto;align-items:center}
+  .pcol,.prail{display:none!important}
   .mob-toggle{display:block;margin-left:auto;border:0;background:none;font-size:18px;padding:4px 8px;color:var(--muted)}
   .ask{bottom:64px;width:calc(100% - 32px)}
   .ask .presets{display:none}
@@ -343,6 +355,7 @@ svg.blobs{transition:opacity .6s}
   </main>
 
   <aside class="panel" id="panel">
+    <button type="button" class="prail" id="prail"></button>
     <div class="tabs" id="tabs" role="tablist"></div>
     <div class="pbody" id="pbody"></div>
   </aside>
@@ -787,7 +800,7 @@ function computeTargets() {
   }
 }
 function relax(movable, iters = 260) {
-  const hubs = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => ({ x: g.hub[0], y: g.hub[1] + 22, w: 240, h: 112, pinned: true }));
+  const hubs = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => ({ x: g.hub[0], y: g.hub[1] + 32, w: 250, h: 140, pinned: true }));
   const all = S.items.map((it) => ({ it, x: it.x, y: it.y, w: CW, h: CH, pinned: !movable.has(it) }));
   const bodies = all.concat(hubs);
   for (let k = 0; k < iters; k++) {
@@ -906,7 +919,7 @@ function renderCanvas() {
   } else hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
     const n = memberCount(g.id);
     const srcs = new Set(S.items.filter((it) => it.g[g.id]).map((it) => it.src)).size;
-    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1] + 30}px">
+    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1] + 50}px">
       <div class="gn">${esc(tr(g.name))}</div>
       <div class="gm">${L(`${n} 条 · 来自 ${srcs} 个平台`, `${n} items · from ${srcs} platforms`)}</div></button>`;
   }).join('');
@@ -958,27 +971,47 @@ function cardEdge(it, from) {
   const k = Math.min((CW / 2 + 3) / (Math.abs(dx) || 1e-6), (CH / 2 + 3) / (Math.abs(dy) || 1e-6));
   return [it.x + dx * k, it.y + dy * k];
 }
+function blobPath(cx, cy, r0, rv, key, n = 11, squash = 0.88) {
+  const pts = [];
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, r = r0 + hash(key + i) * rv; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r * squash]); }
+  let d = `M${f1((pts[0][0] + pts[n - 1][0]) / 2)},${f1((pts[0][1] + pts[n - 1][1]) / 2)}`;
+  for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n]; d += `Q${f1(p[0])},${f1(p[1])} ${f1((p[0] + q[0]) / 2)},${f1((p[1] + q[1]) / 2)}`; }
+  return d + 'Z';
+}
+// Soma painted like watercolor: a soft bleed, pigment pooling toward a darker rim, a rough edge, a dark nucleus.
 function soma(g) {
   const [hx, hy] = g.hub; const seed = (k) => hash(g.id + k);
-  let pts = [];
-  for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, r = 15 + seed('r' + i) * 9; pts.push([hx + Math.cos(a) * r, hy + Math.sin(a) * r * 0.86]); }
-  let d = `M${f1((pts[0][0] + pts[8][0]) / 2)},${f1((pts[0][1] + pts[8][1]) / 2)}`;
-  for (let i = 0; i < 9; i++) { const p = pts[i], q = pts[(i + 1) % 9]; d += `Q${f1(p[0])},${f1(p[1])} ${f1((p[0] + q[0]) / 2)},${f1((p[1] + q[1]) / 2)}`; }
   let stubs = '';
-  for (let i = 0; i < 7; i++) {
-    const a = seed('a' + i) * Math.PI * 2, L = 34 + seed('l' + i) * 58, bend = (seed('b' + i) - 0.5) * 30;
-    const p0 = [hx + Math.cos(a) * 14, hy + Math.sin(a) * 14], p1 = [hx + Math.cos(a) * L, hy + Math.sin(a) * L];
+  for (let i = 0; i < 8; i++) {
+    let a = seed('a' + i) * Math.PI * 2; if (Math.sin(a) > 0.45) a += Math.PI; // keep the label area under the soma clear
+    const L = 56 + seed('l' + i) * 70, bend = (seed('b' + i) - 0.5) * 40;
+    const p0 = [hx + Math.cos(a) * 22, hy + Math.sin(a) * 22], p1 = [hx + Math.cos(a) * L, hy + Math.sin(a) * L];
     const c = [(p0[0] + p1[0]) / 2 - Math.sin(a) * bend, (p0[1] + p1[1]) / 2 + Math.cos(a) * bend];
-    stubs += `<path d="${taper(p0, c, p1, 4.5, 0.4, 8)}" fill="${g.c}" opacity=".5"/>`;
+    stubs += `<path d="${taper(p0, c, p1, 7, 0.5, 10)}" fill="${g.c}" opacity=".5"/>`;
   }
-  return `<circle cx="${hx}" cy="${hy}" r="78" fill="url(#halo-${g.id})"/>${stubs}<path d="${d}" fill="${g.c}" opacity=".92"/><circle cx="${f1(hx + 3)}" cy="${f1(hy - 3)}" r="4.2" fill="#0E1A33" opacity=".55"/>`;
+  let spots = '';
+  for (let i = 0; i < 3; i++) {
+    const a = seed('s' + i) * Math.PI * 2, r = 6 + seed('d' + i) * 12;
+    spots += `<circle cx="${f1(hx + Math.cos(a) * r)}" cy="${f1(hy + Math.sin(a) * r)}" r="${f1(2.5 + seed('z' + i) * 4)}" fill="${g.c}" opacity=".55"/>`;
+  }
+  return `<circle cx="${hx}" cy="${hy}" r="120" fill="url(#halo-${g.id})"/>
+    <path d="${blobPath(hx + 5, hy + 3, 40, 20, g.id + 'bleed', 13)}" fill="${g.c}" opacity=".2" filter="url(#wc-bleed)"/>
+    ${stubs}
+    <g filter="url(#wc-edge)">
+      <path d="${blobPath(hx, hy, 26, 13, g.id + 'body')}" fill="url(#pig-${g.id})" stroke="${g.c}" stroke-opacity=".6" stroke-width="3"/>
+      ${spots}
+      <circle cx="${f1(hx + 4)}" cy="${f1(hy - 4)}" r="6.5" fill="#0E1A33" opacity=".5"/>
+    </g>`;
 }
 function renderBlobs(rel) {
   rel = rel || relatedIds();
-  let defs = '<defs>', body = '';
+  let defs = `<defs>
+    <filter id="wc-edge" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="wc-bleed" x="-60%" y="-60%" width="220%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="4"/></filter>`, body = '';
   for (const g of Object.values(S.groups)) {
     const mem = S.items.filter((it) => it.g[g.id] && !it.flyingNow);
     if (!mem.length) continue;
+    defs += `<radialGradient id="pig-${g.id}" cx=".45" cy=".45" r=".6"><stop offset="0" stop-color="${g.c}" stop-opacity=".5"/><stop offset=".7" stop-color="${g.c}" stop-opacity=".78"/><stop offset="1" stop-color="${g.c}" stop-opacity=".95"/></radialGradient>`;
     defs += `<radialGradient id="halo-${g.id}"><stop offset="0" stop-color="${g.c}" stop-opacity=".28"/><stop offset="1" stop-color="${g.c}" stop-opacity="0"/></radialGradient>`;
     const [hx, hy] = g.hub;
     let nerves = '';
@@ -986,7 +1019,7 @@ function renderBlobs(rel) {
       const end = cardEdge(it, g.hub);
       const dx = end[0] - hx, dy = end[1] - hy, len = Math.hypot(dx, dy) || 1;
       const bend = (hash(it.id + g.id) - 0.5) * 0.36 * len;
-      const start = [hx + (dx / len) * 16, hy + (dy / len) * 16];
+      const start = [hx + (dx / len) * 26, hy + (dy / len) * 26];
       const c = [(hx + end[0]) / 2 - (dy / len) * bend, (hy + end[1]) / 2 + (dx / len) * bend];
       const weak = it.g[g.id][0] < 0.6;
       nerves += `<path d="${taper(start, c, end, weak ? 2.6 : 4.2, 0.9)}" fill="${g.c}" class="${weak ? 'nv weak' : 'nv'}"/>`
@@ -1182,7 +1215,11 @@ function renderTabs() {
   const nq = reviewList().length;
   const tabs = [['log', L('整理日志', 'Activity')], ['review', L('待确认', 'Review'), nq], ['inv', L('盘点', 'Inventory')], ['synth', L('综合', 'Synthesize')]];
   tabsEl.innerHTML = tabs.map(([k, label, c]) => `<button type="button" role="tab" class="tab${S.tab === k && !detailMode() ? ' on' : ''}" data-tab="${k}" aria-selected="${S.tab === k}">${label}${c ? `<span class="c">${c}</span>` : ''}</button>`).join('') +
+    `<button type="button" class="pcol" id="p-collapse" aria-label="${L('收起侧栏', 'Collapse panel')}" title="${L('收起侧栏', 'Collapse panel')}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` +
     `<button type="button" class="mob-toggle" id="mob-toggle" aria-label="Toggle panel">${panel.classList.contains('open') ? '▾' : '▴'}</button>`;
+  const cur = S.sel && !S.keepPanel ? L('详情', 'Details') : S.q ? L('搜索结果', 'Search results') : tabs.find((t) => t[0] === S.tab)[1];
+  $('#prail').innerHTML = `<span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8 10 12.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${nq ? `<span class="c">${nq}</span>` : ''}<span class="vt">${esc(cur)}</span>`;
+  $('#prail').setAttribute('aria-label', L('展开侧栏', 'Expand panel'));
 }
 const detailMode = () => !!(S.sel && !S.keepPanel && S.sel.type !== 'set') || (!!S.q && !S.sel);
 function renderPanel() {
@@ -1371,6 +1408,7 @@ function md(text, order) {
 /* ================= panel events ================= */
 tabsEl.addEventListener('click', (e) => {
   if (e.target.closest('#mob-toggle')) { panel.classList.toggle('open'); renderTabs(); return; }
+  if (e.target.closest('#p-collapse')) return setPanelClosed(true);
   const t = e.target.closest('.tab'); if (!t) return;
   S.tab = t.dataset.tab; panel.classList.add('open');
   if (S.sel && !S.keepPanel) { S.sel = null; renderDock(); renderCanvas(); }
@@ -1433,6 +1471,14 @@ function rerenderAfterEdit(it) {
   renderCanvas(); renderDock(); renderPanel();
   setTimeout(() => { world.classList.remove('anim'); renderBlobs(); }, 1000);
 }
+
+function setPanelClosed(v) {
+  app.classList.toggle('pclosed', v);
+  try { localStorage.setItem('fcc-pclosed', v ? '1' : ''); } catch (e) {}
+  if (!v) $('#p-collapse')?.focus(); else $('#prail').focus();
+}
+$('#prail').addEventListener('click', () => setPanelClosed(false));
+try { if (localStorage.getItem('fcc-pclosed') === '1') app.classList.add('pclosed'); } catch (e) {}
 
 /* ================= toasts & progress ================= */
 function toast(text, gids) {
@@ -1925,6 +1971,7 @@ function startTour() {
   synthCtl?.abort();
   S.q = ''; $('#q').value = '';
   S.tour = { i: 0, intake: false };
+  app.classList.remove('pclosed');
   goTour(0);
 }
 function endTour() { S.tour = null; renderTour(); }
