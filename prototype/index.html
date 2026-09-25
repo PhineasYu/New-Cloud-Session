@@ -9,38 +9,39 @@
 <title>Full Context Canvas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
-  --bg:#E8ECEA; --grid:rgba(20,44,36,.10); --panel:#F7F9F8; --card:#FFFFFF; --card-2:#F1F4F3;
-  --ink:#131A17; --muted:#5A6762; --line:#D2DAD6; --accent:#0F6E63; --accent-ink:#FFFFFF;
-  --accent-soft:rgba(15,110,99,.10); --warn:#A86A0A; --warn-soft:rgba(214,145,20,.14); --ok:#1F8A5B; --bad:#B8403A;
-  --shadow:0 1px 2px rgba(10,30,25,.08),0 6px 18px rgba(10,30,25,.08); --shadow-lg:0 12px 40px rgba(10,30,25,.18);
-  --blob-a:.13; --focus:#2B7BD8;
-  --f-display:"Bricolage Grotesque","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
-  --f-body:"Atkinson Hyperlegible","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --bg:#F4F6F9; --grid:rgba(40,60,100,.09); --panel:#FFFFFF; --card:#FFFFFF; --card-2:#EEF1F6;
+  --ink:#151B28; --muted:#687386; --line:#E1E6EE; --accent:#3D5CE0; --accent-ink:#FFFFFF;
+  --accent-soft:rgba(61,92,224,.09); --warn:#A8700F; --warn-soft:rgba(214,150,30,.13); --ok:#2E8A5C; --bad:#B8403A;
+  --shadow:0 1px 2px rgba(20,30,60,.05),0 4px 14px rgba(20,30,60,.05); --shadow-lg:0 12px 40px rgba(20,30,60,.14);
+  --nerve:.55; --focus:#3D5CE0;
+  --f-display:"Instrument Sans","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-body:"Instrument Sans","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"Instrument Sans","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#0E1312; --grid:rgba(210,236,226,.07); --panel:#141A19; --card:#1A2220; --card-2:#202A28;
-    --ink:#E3EBE7; --muted:#8F9D98; --line:#2A3431; --accent:#45C7B3; --accent-ink:#06201C;
-    --accent-soft:rgba(69,199,179,.13); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.14); --ok:#4CC38A; --bad:#EF6E66;
-    --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 22px rgba(0,0,0,.35); --shadow-lg:0 16px 48px rgba(0,0,0,.55); --blob-a:.17;
+    --bg:#0B0F16; --grid:rgba(180,200,240,.07); --panel:#10151E; --card:#151B26; --card-2:#1C2331;
+    --ink:#E6EAF2; --muted:#8B95A8; --line:#242C3A; --accent:#8098FF; --accent-ink:#0B1030;
+    --accent-soft:rgba(128,152,255,.13); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.13); --ok:#56C68F; --bad:#EF6E66;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.3); --shadow-lg:0 16px 48px rgba(0,0,0,.55); --nerve:.7;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0E1312; --grid:rgba(210,236,226,.07); --panel:#141A19; --card:#1A2220; --card-2:#202A28;
-  --ink:#E3EBE7; --muted:#8F9D98; --line:#2A3431; --accent:#45C7B3; --accent-ink:#06201C;
-  --accent-soft:rgba(69,199,179,.13); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.14); --ok:#4CC38A; --bad:#EF6E66;
-  --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 22px rgba(0,0,0,.35); --shadow-lg:0 16px 48px rgba(0,0,0,.55); --blob-a:.17;
+  --bg:#0B0F16; --grid:rgba(180,200,240,.07); --panel:#10151E; --card:#151B26; --card-2:#1C2331;
+  --ink:#E6EAF2; --muted:#8B95A8; --line:#242C3A; --accent:#8098FF; --accent-ink:#0B1030;
+  --accent-soft:rgba(128,152,255,.13); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.13); --ok:#56C68F; --bad:#EF6E66;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.3); --shadow-lg:0 16px 48px rgba(0,0,0,.55); --nerve:.7;
 }
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;overflow:hidden}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
+b,strong,h1,h2,h3,h4{font-weight:500}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
@@ -50,7 +51,7 @@ button{cursor:pointer}
 .top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--panel);position:relative;z-index:6}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand svg{flex:none}
-.brand b{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
+.brand b{font-family:var(--f-display);font-weight:500;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
 .brand .tag{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:11.5px;letter-spacing:.02em;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
@@ -60,7 +61,7 @@ button{cursor:pointer}
 .search input{flex:1;min-width:0;border:0;background:none;outline:none;height:100%}
 .search kbd{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 5px}
 .actions{display:flex;gap:8px;align-items:center}
-.btn{height:36px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:700;font-size:13px}
+.btn{height:36px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:500;font-size:13px}
 .btn:hover{border-color:color-mix(in srgb,var(--ink) 30%,var(--line))}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.primary:hover{filter:brightness(1.07)}
@@ -71,11 +72,11 @@ button{cursor:pointer}
 /* ---------- dock ---------- */
 .dock{grid-row:2;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;gap:10px;padding-block:14px;z-index:5;overflow-y:auto}
 .dock .cap{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.2}
-.node{position:relative;width:46px;height:46px;border-radius:14px;border:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:-.01em;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.node{position:relative;width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:500;font-size:13px;letter-spacing:-.01em;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
 .node:hover{transform:translateX(2px)}
-.node.on{box-shadow:0 0 0 3px var(--panel),0 0 0 5px var(--nc),0 0 22px var(--nc)}
+.node.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),0 0 22px color-mix(in srgb,var(--accent) 45%,transparent)}
 .node.pulse{animation:nodepulse 1s ease-out}
-@keyframes nodepulse{0%{box-shadow:0 0 0 0 var(--nc)}100%{box-shadow:0 0 0 14px transparent}}
+@keyframes nodepulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
 .node .n{position:absolute;right:-7px;top:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:10.5px;display:grid;place-items:center}
 .node .n.q{background:var(--accent);color:var(--accent-ink)}
 
@@ -86,43 +87,46 @@ button{cursor:pointer}
 .world{position:absolute;left:0;top:0;transform-origin:0 0;--ls:1}
 .world svg.blobs{position:absolute;left:-4000px;top:-4000px;width:8000px;height:8000px;overflow:visible;pointer-events:none}
 .blob{transition:opacity .35s}
-.hub{position:absolute;transform:translate(-50%,-50%) scale(var(--ls));text-align:center;border:0;background:none;padding:6px 10px;border-radius:12px;white-space:nowrap;transition:opacity .35s}
-.hub .gn{font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:-.015em;display:flex;align-items:center;gap:8px;justify-content:center}
+.nv{opacity:var(--nerve)}
+.nv.weak{opacity:.32}
+.hub{position:absolute;transform:translate(-50%,0) scale(var(--ls));transform-origin:50% 0;text-align:center;border:0;background:none;padding:6px 10px;border-radius:12px;white-space:nowrap;transition:opacity .35s}
+.hub .gn{font-family:var(--f-display);font-weight:500;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;justify-content:center}
 .hub .gn i{width:11px;height:11px;border-radius:4px;display:inline-block}
 .hub .gm{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
-.hub:hover .gn{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
-.card{position:absolute;left:0;top:0;width:212px;height:86px;padding:9px 11px 8px;border-radius:12px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;transition:opacity .35s,box-shadow .2s,border-color .2s,background .35s}
+.hub:hover .gn{color:var(--accent)}
+.card{position:absolute;left:0;top:0;width:212px;height:86px;padding:9px 11px 8px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;transition:opacity .35s,box-shadow .2s,border-color .2s,background .35s}
 .world.anim .card{transition:transform .95s cubic-bezier(.2,.8,.2,1),opacity .35s,box-shadow .2s,border-color .2s,background .35s}
-.card:hover{border-color:color-mix(in srgb,var(--ink) 35%,var(--line))}
+.card:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .card .row{display:flex;align-items:center;gap:6px;min-width:0}
-.chip{flex:none;height:18px;min-width:22px;padding:0 5px;border-radius:5px;font-family:var(--f-display);font-weight:700;font-size:10.5px;display:inline-grid;place-items:center;line-height:1}
+.chip{flex:none;height:18px;min-width:22px;padding:0 5px;border-radius:5px;font-family:var(--f-display);font-weight:500;font-size:10px;letter-spacing:.02em;display:inline-grid;place-items:center;line-height:1;background:var(--card-2);color:var(--ink);border:1px solid var(--line)}
 .card .meta{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .t{font-weight:700;font-size:12.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .t{font-weight:500;font-size:12.5px;letter-spacing:-.003em;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .gs{margin-top:auto;display:flex;gap:4px;align-items:center}
-.card .gs i{width:16px;height:5px;border-radius:3px}
+.card .gs i{width:7px;height:7px;border-radius:50%}
 .card .unsure{margin-left:auto;font-family:var(--f-mono);font-size:10px;color:var(--warn);background:var(--warn-soft);padding:0 5px;border-radius:4px}
 .card.q{border-style:dashed;border-color:var(--warn)}
-.card.sel{border-color:var(--sc);box-shadow:0 0 0 2px var(--sc),0 0 26px color-mix(in srgb,var(--sc) 55%,transparent)}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent),0 0 24px color-mix(in srgb,var(--accent) 40%,transparent)}
 .card.new{animation:arrive 1.6s ease-out}
 @keyframes arrive{0%,60%{background:var(--accent-soft)}100%{background:var(--card)}}
-.dim .card:not(.hi){opacity:.26}
+.dim .card:not(.hi){opacity:.28}
 .dim .hub:not(.hi){opacity:.35}
-.dim .blob:not(.hi){opacity:.3}
-.world.far .card{padding:0;border-color:transparent;background:var(--sc)}
+.dim .blob:not(.hi){opacity:.12}
+.world.far .card{padding:0;border-color:transparent;background:transparent;box-shadow:none}
 .world.far .card > *{opacity:0}
-.world.far .card.sel{box-shadow:0 0 0 6px var(--sc),0 0 40px var(--sc)}
+.world.far .card::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:var(--dc);box-shadow:0 0 0 10px color-mix(in srgb,var(--dc) 18%,transparent)}
+.world.far .card.sel::after{box-shadow:0 0 0 12px color-mix(in srgb,var(--accent) 35%,transparent),0 0 50px var(--accent)}
 
 svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
-.thread-glow{fill:none;stroke-width:9;opacity:.35;filter:blur(5px)}
-.thread{fill:none;stroke-width:2.4;stroke-linecap:round}
-.thread-pulse{fill:none;stroke-width:3.2;stroke-linecap:round;stroke:#fff;stroke-dasharray:14 280;animation:flow 1.8s linear infinite;opacity:.9}
+.thread-glow{fill:none;stroke:var(--accent);stroke-width:8;opacity:.32;filter:blur(5px)}
+.thread{fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round}
+.thread-pulse{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:#fff;stroke-dasharray:14 280;animation:flow 1.8s linear infinite;opacity:.9}
 .thin .thread{stroke-width:1.4;opacity:.75}
 .thin .thread-glow{stroke-width:5;opacity:.22}
 .thin .thread-pulse{stroke-width:2;stroke-dasharray:8 300}
 @keyframes flow{from{stroke-dashoffset:294}to{stroke-dashoffset:0}}
 
 .zoom{position:absolute;left:14px;bottom:14px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;z-index:3}
-.zoom button{width:34px;height:32px;border:0;background:none;font-size:16px;font-weight:700}
+.zoom button{width:34px;height:32px;border:0;background:none;font-size:16px;font-weight:500}
 .zoom button+button{border-top:1px solid var(--line)}
 .zoom button:hover{background:var(--card-2)}
 
@@ -140,14 +144,14 @@ svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none
 /* ---------- panel ---------- */
 .panel{grid-row:2;grid-column:3;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;z-index:5}
 .tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--line);flex:none}
-.tab{border:0;background:none;padding:8px 10px 10px;font-weight:700;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.tab{border:0;background:none;padding:8px 10px 10px;font-weight:500;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:6px;align-items:center;white-space:nowrap}
 .tab.on{color:var(--ink);border-bottom-color:var(--ink)}
 .tab .c{font-family:var(--f-mono);font-size:10.5px;background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:0 5px}
 .pbody{flex:1;overflow-y:auto;padding:16px 16px 28px;display:flex;flex-direction:column;gap:16px}
-.pbody h2{font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.25;letter-spacing:-.01em;margin:0;text-wrap:balance}
-.pbody h3{font-family:var(--f-display);font-weight:700;font-size:14px;margin:0}
-.lbl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.back{align-self:flex-start;border:0;background:none;color:var(--muted);padding:0;font-weight:700;font-size:12.5px}
+.pbody h2{font-family:var(--f-display);font-weight:500;font-size:19px;line-height:1.25;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.pbody h3{font-family:var(--f-display);font-weight:500;font-size:14px;margin:0}
+.lbl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.back{align-self:flex-start;border:0;background:none;color:var(--muted);padding:0;font-weight:500;font-size:12.5px}
 .back:hover{color:var(--ink)}
 .box{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px}
 .srcline{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px}
@@ -155,7 +159,7 @@ svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none
 .loc .path{font-family:var(--f-mono);font-size:12px;word-break:break-word}
 .safe{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ok)}
 .safe svg{flex:none;margin-top:1px}
-.lnk{color:var(--accent);font-weight:700;font-size:12.5px;text-decoration:none}
+.lnk{color:var(--accent);font-weight:500;font-size:12.5px;text-decoration:none}
 .lnk:hover{text-decoration:underline}
 .mem{display:flex;flex-direction:column;gap:7px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
 .mem.q{border-color:var(--warn);border-style:dashed}
@@ -166,7 +170,7 @@ svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none
 .conf .bar{width:54px;height:5px;border-radius:3px;background:var(--card-2);overflow:hidden}
 .conf .bar i{display:block;height:100%;border-radius:3px}
 .why{font-size:13px;color:var(--ink)}
-.flag{font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:5px;padding:1px 6px}
+.flag{font-size:10.5px;font-weight:500;color:var(--warn);background:var(--warn-soft);border-radius:5px;padding:1px 6px}
 .flag.you{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
 .mem .acts{display:flex;gap:6px}
 .addg{display:flex;gap:8px;align-items:center}
@@ -188,14 +192,14 @@ svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none
 .evt:hover{background:var(--card)}
 .evt .tm{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);width:38px;flex:none;padding-top:2px}
 .evt .bd{min-width:0;display:flex;flex-direction:column;gap:4px}
-.evt .tt{font-weight:700;font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.evt .tt{font-weight:500;font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .evt .to{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11.5px;color:var(--muted)}
 .gtag{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:6px;background:var(--card-2);font-size:11.5px;color:var(--ink);border:0}
 .gtag i{width:7px;height:7px;border-radius:2px}
 .gtag.q{background:var(--warn-soft)}
 .list{display:flex;flex-direction:column;gap:2px}
 table.inv{width:100%;border-collapse:collapse;font-size:12.5px}
-table.inv th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 6px 6px 0}
+table.inv th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:0 6px 6px 0}
 table.inv td{padding:7px 6px 7px 0;border-top:1px solid var(--line)}
 table.inv td.n{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
 table.inv th.n{text-align:right}
@@ -216,7 +220,7 @@ table.inv th.n{text-align:right}
 @keyframes blink{50%{opacity:0}}
 .foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
 .presetcol{display:flex;flex-direction:column;gap:6px}
-.presetcol button{text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:13px}
+.presetcol button{text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:500;font-size:13px}
 .presetcol button:hover{border-color:var(--accent)}
 .presetcol small{display:block;font-weight:400;color:var(--muted);font-size:12px}
 .switch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
@@ -239,15 +243,15 @@ table.inv th.n{text-align:right}
 @keyframes sp{to{transform:rotate(360deg)}}
 .mob-toggle{display:none}
 .modes{position:absolute;right:14px;top:14px;z-index:3;display:flex;gap:2px;padding:3px;border-radius:11px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-.modes button{height:30px;padding:0 12px;border:0;border-radius:8px;background:none;font-weight:700;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.modes button{height:30px;padding:0 12px;border:0;border-radius:8px;background:none;font-weight:500;font-size:12.5px;color:var(--muted);white-space:nowrap}
 .modes button.on{background:var(--ink);color:var(--bg)}
 .app.touring .modes,.app.touring .hint{display:none}
 svg.blobs{transition:opacity .6s}
-.hub.silo{transform:translate(-50%,-50%) scale(var(--lss))}
+.hub.silo{transform:translate(-50%,-50%) scale(var(--lss));transform-origin:50% 50%}
 .hub.silo .gn{font-size:17px}
 .world.far .hub.silo .gm{display:none}
 .hub.silo .chip{height:22px;min-width:26px;font-size:12px}
-.xlabel{position:absolute;transform:translate(-50%,-100%) scale(var(--ls));transform-origin:50% 100%;padding:7px 13px;border-radius:999px;background:var(--ink);color:var(--bg);font-family:var(--f-display);font-weight:700;font-size:15px;white-space:nowrap;box-shadow:var(--shadow-lg);pointer-events:none}
+.xlabel{position:absolute;transform:translate(-50%,-100%) scale(var(--ls));transform-origin:50% 100%;padding:7px 13px;border-radius:999px;background:var(--ink);color:var(--bg);font-family:var(--f-display);font-weight:500;font-size:15px;white-space:nowrap;box-shadow:var(--shadow-lg);pointer-events:none}
 .tour{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:min(500px,calc(100% - 32px));z-index:4;background:var(--ink);color:var(--bg);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:7px;animation:tin .3s ease-out}
 .tour .st{font-family:var(--f-mono);font-size:11px;display:flex;gap:4px;align-items:center}
 .tour .st span{opacity:.7;margin-right:6px}
@@ -256,13 +260,13 @@ svg.blobs{transition:opacity .6s}
 .tour h3{font-family:var(--f-display);font-size:19px;line-height:1.25;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .tour p{margin:0;font-size:13.5px;line-height:1.5;opacity:.88}
 .tour .tb{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
-.tour .tb button{height:32px;padding:0 12px;border-radius:9px;border:1px solid color-mix(in srgb,var(--bg) 30%,transparent);background:none;color:var(--bg);font-weight:700;font-size:12.5px}
+.tour .tb button{height:32px;padding:0 12px;border-radius:9px;border:1px solid color-mix(in srgb,var(--bg) 30%,transparent);background:none;color:var(--bg);font-weight:500;font-size:12.5px}
 .tour .tb button.pri{background:var(--bg);color:var(--ink);border-color:var(--bg)}
 .tour .tb .sp{margin-right:auto;border:0;padding:0;opacity:.7}
 .xlist{display:flex;flex-direction:column;gap:6px}
 .xrow{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);text-align:left;width:100%}
 .xrow:hover{border-color:var(--ink)}
-.xrow .nm{font-weight:700;font-size:13px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.xrow .nm{font-weight:500;font-size:13px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 .xrow .ct{margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap}
 
 /* ---------- narrow screens ---------- */
@@ -299,7 +303,7 @@ svg.blobs{transition:opacity .6s}
 <div class="app" id="app">
   <header class="top">
     <div class="brand">
-      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="3.2" fill="#7B61FF"/><circle cx="17" cy="16" r="3.2" fill="#1F9D6B"/><path d="M9 10 C 13 10, 13 16, 17 16" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="3.2" fill="#6B4FD6"/><circle cx="17" cy="16" r="3.2" fill="#45A85A"/><path d="M9 10 C 13 10, 13 16, 17 16" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
       <b>Full Context Canvas</b>
       <span class="tag" id="tagline"></span>
     </div>
@@ -405,20 +409,20 @@ const SRC = {
 const SRC_IDS = Object.keys(SRC);
 
 const GROUPS = {
-  ai:      { name: ['AI 工具与工作流', 'AI tools & workflows'], c: '#7B61FF', hub: [0, 0],
+  ai:      { name: ['AI 工具与工作流', 'AI tools & workflows'], c: '#6B4FD6', hub: [0, 0],
              def: ['你怎么用 AI 干活:模型、agent、提示词和自动化。', 'How you get work done with AI: models, agents, prompts, automation.'] },
-  design:  { name: ['产品与界面设计', 'Product & UI design'], c: '#E0598B', hub: [-660, -20],
+  design:  { name: ['产品与界面设计', 'Product & UI design'], c: '#2F7FC4', hub: [-660, -20],
              def: ['界面、交互、动效和设计方法。', 'Interfaces, interaction, motion and design methods.'] },
-  career:  { name: ['求职与作品集', 'Career & portfolio'], c: '#D08A00', hub: [-110, -620],
+  career:  { name: ['求职与作品集', 'Career & portfolio'], c: '#2E5A70', hub: [-110, -620],
              def: ['简历、作品集、岗位和薪资。', 'Résumé, portfolio, roles and pay.'] },
-  startup: { name: ['创业想法', 'Startup idea'], c: '#2B7BD8', hub: [660, -40],
+  startup: { name: ['创业想法', 'Startup idea'], c: '#179AA6', hub: [660, -40],
              def: ['你在琢磨的创业方向,以及能证明痛点存在的材料。', 'The company you are thinking about, and evidence that the pain is real.'] },
-  learn:   { name: ['学习方法与专注', 'Learning & focus'], c: '#1F9D6B', hub: [-40, 620],
+  learn:   { name: ['学习方法与专注', 'Learning & focus'], c: '#45A85A', hub: [-40, 620],
              def: ['怎么学得更快,怎么在 ADHD 下保持专注。', 'Learning faster and staying focused with ADHD.'] },
-  life:    { name: ['生活', 'Life'], c: '#8C8F4A', hub: [-1080, 600],
+  life:    { name: ['生活', 'Life'], c: '#9A83D9', hub: [-1080, 600],
              def: ['做饭、旅行,和工作无关但你想留着的东西。', 'Cooking, travel, and other things you want to keep.'] },
 };
-const EXTRA_COLORS = ['#0E9AA7', '#B5652A', '#9C4DCC', '#C0487A'];
+const EXTRA_COLORS = ['#5AA7D6', '#7FA83A', '#8A6FE0', '#3C7F9A'];
 
 /* ================= sample data ================= */
 // g: { groupId: [confidence, reasonZh, reasonEn] }
@@ -707,7 +711,7 @@ const pad2 = (n) => String(n).padStart(2, '0');
 const nowStamp = () => { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
 const hm = (stamp) => (stamp || '').slice(11, 16) || (stamp || '').slice(5, 10);
 const gName = (gid) => tr(S.groups[gid]?.name || gid);
-const srcChip = (sid) => { const s = SRC[sid]; return `<span class="chip" style="background:${s.c};color:${s.fg}">${s.m}</span>`; };
+const srcChip = (sid) => `<span class="chip" title="${SRC[sid].n}">${SRC[sid].m}</span>`;
 const gTag = (gid, q) => { const g = S.groups[gid]; if (!g) return ''; return `<span class="gtag${q ? ' q' : ''}"><i style="background:${g.c}"></i>${esc(tr(g.name))}</span>`; };
 const isQ = (it) => Object.values(it.g).some((m) => m[0] < 0.6);
 const maxConf = (it) => Math.max(0, ...Object.values(it.g).map((m) => m[0]));
@@ -791,7 +795,7 @@ function computeTargets() {
   }
 }
 function relax(movable, iters = 260) {
-  const hubs = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => ({ x: g.hub[0], y: g.hub[1], w: 250, h: 70, pinned: true }));
+  const hubs = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => ({ x: g.hub[0], y: g.hub[1] + 22, w: 240, h: 112, pinned: true }));
   const all = S.items.map((it) => ({ it, x: it.x, y: it.y, w: CW, h: CH, pinned: !movable.has(it) }));
   const bodies = all.concat(hubs);
   for (let k = 0; k < iters; k++) {
@@ -837,7 +841,7 @@ function freeHub() {
 function ensureGroup(id, name, def) {
   if (S.groups[id]) return id;
   const used = Object.values(S.groups).filter((g) => g.extra).length;
-  S.groups[id] = { id, name: [name, name], def: [def || '由 AI 在导入时新建的组。', def || 'A group AI created during import.'], c: id === 'misc' ? '#8A8F98' : EXTRA_COLORS[used % EXTRA_COLORS.length], hub: freeHub(), extra: true };
+  S.groups[id] = { id, name: [name, name], def: [def || '由 AI 在导入时新建的组。', def || 'A group AI created during import.'], c: id === 'misc' ? '#8A93A6' : EXTRA_COLORS[used % EXTRA_COLORS.length], hub: freeHub(), extra: true };
   return id;
 }
 
@@ -878,7 +882,7 @@ function renderDock() {
     const s = SRC[sid];
     const on = !!S.sel && lit.has(sid);
     const n = S.q ? (hits[sid] || 0) : (counts[sid] || 0);
-    return `<button type="button" class="node${on ? ' on' : ''}" data-src="${sid}" style="--nc:${s.c};background:${s.c};color:${s.fg}" title="${esc(s.n)} · ${esc(tr(s.kind))}" aria-label="${esc(s.n)}">${s.m}<span class="n${S.q ? ' q' : ''}">${n}</span></button>`;
+    return `<button type="button" class="node${on ? ' on' : ''}" data-src="${sid}" title="${esc(s.n)} · ${esc(tr(s.kind))}" aria-label="${esc(s.n)}">${s.m}<span class="n${S.q ? ' q' : ''}">${n}</span></button>`;
   }).join('');
 }
 
@@ -910,8 +914,8 @@ function renderCanvas() {
   } else hubsEl.innerHTML = Object.values(S.groups).filter((g) => memberCount(g.id) > 0).map((g) => {
     const n = memberCount(g.id);
     const srcs = new Set(S.items.filter((it) => it.g[g.id]).map((it) => it.src)).size;
-    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1]}px">
-      <div class="gn"><i style="background:${g.c}"></i>${esc(tr(g.name))}</div>
+    return `<button type="button" class="hub${rel.gs.has(g.id) ? ' hi' : ''}" data-group="${g.id}" style="left:${g.hub[0]}px;top:${g.hub[1] + 30}px">
+      <div class="gn">${esc(tr(g.name))}</div>
       <div class="gm">${L(`${n} 条 · 来自 ${srcs} 个平台`, `${n} items · from ${srcs} platforms`)}</div></button>`;
   }).join('');
   // cards: keep elements to preserve transitions
@@ -923,7 +927,8 @@ function renderCanvas() {
     existing.delete(it.id);
     const s = SRC[it.src];
     const gs = Object.entries(it.g).filter(([g]) => S.groups[g]);
-    c.style.setProperty('--sc', s.c);
+    const prim = gs.slice().sort((a, b) => b[1][0] - a[1][0])[0];
+    c.style.setProperty('--dc', prim ? S.groups[prim[0]].c : 'var(--muted)');
     c.classList.toggle('q', isQ(it));
     c.classList.toggle('sel', !!(S.sel && S.sel.type === 'item' && S.sel.id === it.id) || ((S.sel?.type === 'set' || S.sel?.type === 'inter') && rel.ids.has(it.id)));
     c.classList.toggle('hi', rel.ids.has(it.id) || (S.sel?.type === 'item' && gs.some(([g]) => rel.gs.has(g)) && !S.q));
@@ -943,24 +948,60 @@ function renderCanvas() {
   } else ov.innerHTML = '';
   renderBlobs(rel);
 }
+// Groups are drawn as neurons: a soma at the hub and thin tapering dendrites to each member card.
+const f1 = (v) => v.toFixed(1);
+function taper(p0, c, p1, w0, w1, n = 16) {
+  const a = [], b = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, m = 1 - t;
+    const x = m * m * p0[0] + 2 * m * t * c[0] + t * t * p1[0], y = m * m * p0[1] + 2 * m * t * c[1] + t * t * p1[1];
+    const dx = 2 * m * (c[0] - p0[0]) + 2 * t * (p1[0] - c[0]), dy = 2 * m * (c[1] - p0[1]) + 2 * t * (p1[1] - c[1]);
+    const len = Math.hypot(dx, dy) || 1, w = (w0 + (w1 - w0) * Math.pow(t, 0.6)) / 2;
+    a.push(`${f1(x - (dy / len) * w)},${f1(y + (dx / len) * w)}`); b.push(`${f1(x + (dy / len) * w)},${f1(y - (dx / len) * w)}`);
+  }
+  return `M${a.join('L')}L${b.reverse().join('L')}Z`;
+}
+function cardEdge(it, from) {
+  const dx = from[0] - it.x, dy = from[1] - it.y;
+  const k = Math.min((CW / 2 + 3) / (Math.abs(dx) || 1e-6), (CH / 2 + 3) / (Math.abs(dy) || 1e-6));
+  return [it.x + dx * k, it.y + dy * k];
+}
+function soma(g) {
+  const [hx, hy] = g.hub; const seed = (k) => hash(g.id + k);
+  let pts = [];
+  for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, r = 15 + seed('r' + i) * 9; pts.push([hx + Math.cos(a) * r, hy + Math.sin(a) * r * 0.86]); }
+  let d = `M${f1((pts[0][0] + pts[8][0]) / 2)},${f1((pts[0][1] + pts[8][1]) / 2)}`;
+  for (let i = 0; i < 9; i++) { const p = pts[i], q = pts[(i + 1) % 9]; d += `Q${f1(p[0])},${f1(p[1])} ${f1((p[0] + q[0]) / 2)},${f1((p[1] + q[1]) / 2)}`; }
+  let stubs = '';
+  for (let i = 0; i < 7; i++) {
+    const a = seed('a' + i) * Math.PI * 2, L = 34 + seed('l' + i) * 58, bend = (seed('b' + i) - 0.5) * 30;
+    const p0 = [hx + Math.cos(a) * 14, hy + Math.sin(a) * 14], p1 = [hx + Math.cos(a) * L, hy + Math.sin(a) * L];
+    const c = [(p0[0] + p1[0]) / 2 - Math.sin(a) * bend, (p0[1] + p1[1]) / 2 + Math.cos(a) * bend];
+    stubs += `<path d="${taper(p0, c, p1, 4.5, 0.4, 8)}" fill="${g.c}" opacity=".5"/>`;
+  }
+  return `<circle cx="${hx}" cy="${hy}" r="78" fill="url(#halo-${g.id})"/>${stubs}<path d="${d}" fill="${g.c}" opacity=".92"/><circle cx="${f1(hx + 3)}" cy="${f1(hy - 3)}" r="4.2" fill="#0E1A33" opacity=".55"/>`;
+}
 function renderBlobs(rel) {
   rel = rel || relatedIds();
-  let defs = '<defs>';
-  let body = '';
+  let defs = '<defs>', body = '';
   for (const g of Object.values(S.groups)) {
     const mem = S.items.filter((it) => it.g[g.id] && !it.flyingNow);
     if (!mem.length) continue;
-    defs += `<filter id="fx-${g.id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-      <feMorphology in="SourceAlpha" operator="dilate" radius="2.2" result="d"/>
-      <feComposite in="d" in2="SourceAlpha" operator="out" result="edge"/>
-      <feFlood style="flood-color:${g.c};flood-opacity:.85"/><feComposite in2="edge" operator="in" result="edgeC"/>
-      <feFlood style="flood-color:${g.c};flood-opacity:var(--blob-a)"/><feComposite in2="SourceAlpha" operator="in" result="fillC"/>
-      <feMerge><feMergeNode in="fillC"/><feMergeNode in="edgeC"/></feMerge></filter>`;
+    defs += `<radialGradient id="halo-${g.id}"><stop offset="0" stop-color="${g.c}" stop-opacity=".28"/><stop offset="1" stop-color="${g.c}" stop-opacity="0"/></radialGradient>`;
     const [hx, hy] = g.hub;
-    let shapes = `<circle cx="${hx}" cy="${hy}" r="130"/>`;
-    for (const it of mem) shapes += `<line x1="${hx}" y1="${hy}" x2="${it.x.toFixed(1)}" y2="${it.y.toFixed(1)}" stroke="#000" stroke-width="96" stroke-linecap="round"/><rect x="${(it.x - CW / 2 - 22).toFixed(1)}" y="${(it.y - CH / 2 - 22).toFixed(1)}" width="${CW + 44}" height="${CH + 44}" rx="40"/>`;
+    let nerves = '';
+    for (const it of mem) {
+      const end = cardEdge(it, g.hub);
+      const dx = end[0] - hx, dy = end[1] - hy, len = Math.hypot(dx, dy) || 1;
+      const bend = (hash(it.id + g.id) - 0.5) * 0.36 * len;
+      const start = [hx + (dx / len) * 16, hy + (dy / len) * 16];
+      const c = [(hx + end[0]) / 2 - (dy / len) * bend, (hy + end[1]) / 2 + (dx / len) * bend];
+      const weak = it.g[g.id][0] < 0.6;
+      nerves += `<path d="${taper(start, c, end, weak ? 2.6 : 4.2, 0.9)}" fill="${g.c}" class="${weak ? 'nv weak' : 'nv'}"/>`
+        + `<circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="6" fill="${g.c}" opacity=".16"/><circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="2.8" fill="${g.c}"/>`;
+    }
     const hi = rel.gs.has(g.id) || (rel.active && mem.some((it) => rel.ids.has(it.id)));
-    body += `<g class="blob${hi ? ' hi' : ''}" filter="url(#fx-${g.id})">${shapes}</g>`;
+    body += `<g class="blob${hi ? ' hi' : ''}">${nerves}${soma(g)}</g>`;
   }
   blobsEl.innerHTML = defs + '</defs>' + body;
   blobsEl.style.opacity = S.mode === 'silo' || S.blobHold ? '0' : '1';
@@ -1113,8 +1154,7 @@ function drawThreads() {
     let g = threadEls.get(id);
     if (!g) {
       g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      const c = SRC[it.src].c;
-      g.innerHTML = `<path class="thread-glow" stroke="${c}"/><path class="thread" stroke="${c}"/><path class="thread-pulse"/>`;
+      g.innerHTML = '<path class="thread-glow"/><path class="thread"/><path class="thread-pulse"/>';
       threadsEl.appendChild(g); threadEls.set(id, g);
     }
     for (const p of g.children) p.setAttribute('d', d);
@@ -1276,7 +1316,7 @@ function invView() {
   <div class="xlist">${intersections().slice(0, 5).map(xRow).join('')}</div>
   <div class="lbl">${L('主题分布,以及它们横跨了哪些平台', 'Themes, and which platforms they span')}</div>
   <div class="box" style="overflow-x:auto"><table class="inv"><tbody>
-  ${groups.map(({ g, n, srcs }) => `<tr><td><button type="button" class="gtag" data-act="group" data-g="${g.id}"><i style="background:${g.c}"></i>${esc(tr(g.name))}</button></td><td class="n">${n}</td><td><span class="spread">${SRC_IDS.map((sid) => `<i title="${SRC[sid].n}" style="${srcs.has(sid) ? `background:${SRC[sid].c}` : ''}"></i>`).join('')}</span></td></tr>`).join('')}
+  ${groups.map(({ g, n, srcs }) => `<tr><td><button type="button" class="gtag" data-act="group" data-g="${g.id}"><i style="background:${g.c}"></i>${esc(tr(g.name))}</button></td><td class="n">${n}</td><td><span class="spread">${SRC_IDS.map((sid) => `<i title="${SRC[sid].n}" style="${srcs.has(sid) ? 'background:var(--accent)' : ''}"></i>`).join('')}</span></td></tr>`).join('')}
   </tbody></table></div>`;
 }
 function synthView() {
@@ -1321,7 +1361,7 @@ function md(text, order) {
     const it = S.byId[id]; if (!it) return all;
     const n = order.indexOf(id) + 1;
     const on = S.sel && S.sel.type === 'item' && S.sel.id === id;
-    return `<button type="button" class="cite${on ? ' on' : ''}" data-act="cite" data-id="${id}" title="${esc(SRC[it.src].n + ': ' + it.t)}"><i style="background:${SRC[it.src].c}"></i>${n}</button>`;
+    return `<button type="button" class="cite${on ? ' on' : ''}" data-act="cite" data-id="${id}" title="${esc(SRC[it.src].n + ': ' + it.t)}">${n}</button>`;
   });
   for (const raw of lines) {
     const l = raw.trimEnd();
